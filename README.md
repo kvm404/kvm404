@@ -1,10 +1,6 @@
 # Hi, I'm Kumar Vaibhav <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="wave" />
 
 <p>
-  <em>"01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100"</em>
-</p>
-
-<p>
   <img src="https://komarev.com/ghpvc/?username=kvm404&label=Profile%20views&color=0e75b6&style=flat" alt="profile views" />
   <img src="https://img.shields.io/github/followers/kvm404?label=Followers&style=flat&color=1f6feb" alt="followers" />
 </p>
@@ -45,18 +41,11 @@
 - [MediStore](https://github.com/kvm404/MediStore) - A medicine store web project.
 - [GoCareer](https://github.com/kvm404/GoCareer) - Rural career guidance web app.
 
-## GitHub Stats
 
-<p>
-  <img height="170" src="https://github-readme-stats.vercel.app/api?username=kvm404&show_icons=true&theme=transparent&hide_border=true" alt="GitHub stats" />
-  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=kvm404&layout=compact&theme=transparent&hide_border=true" alt="Top languages" />
-</p>
 
 ## Connect
 
 - GitHub: [@kvm404](https://github.com/kvm404)
-- Location: Earth
+
 
 ---
-
-<p align="center"><em>Learning in public, one commit at a time.</em></p>
