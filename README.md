@@ -2,7 +2,6 @@
 
 <p>
   <img src="https://komarev.com/ghpvc/?username=kvm404&label=Profile%20views&color=0e75b6&style=flat" alt="profile views" />
-  <img src="https://img.shields.io/github/followers/kvm404?label=Followers&style=flat&color=1f6feb" alt="followers" />
 </p>
 
 ## About Me
