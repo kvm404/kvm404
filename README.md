@@ -36,7 +36,7 @@
 
 ## Featured Projects
 
-- [hospital-management-system](https://github.com/kvm404/hospital-management-system) - A healthcare workflow project.
+- [hospital-management-system](https://github.com/kvm404/hospital-management-system) - A full-stack web application for managing hospital operations.
 - [MediStore](https://github.com/kvm404/MediStore) - A medicine store web project.
 - [GoCareer](https://github.com/kvm404/GoCareer) - Rural career guidance web app.
 
