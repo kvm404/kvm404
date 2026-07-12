@@ -45,7 +45,6 @@
 
 ## Connect
 
-- GitHub: [@kvm404](https://github.com/kvm404)
-
+- Linkedin: [Kumar Vaibhav](https://www.linkedin.com/in/krvaibhav07/)
 
 ---
