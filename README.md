@@ -39,8 +39,9 @@
 - [hospital-management-system](https://github.com/kvm404/hospital-management-system) - A full-stack web application for managing hospital operations.
 - [MediStore](https://github.com/kvm404/MediStore) - A medicine store web project.
 - [GoCareer](https://github.com/kvm404/GoCareer) - Rural career guidance web app.
-
-
+- [finman](https://github.com/kvm404/finman) - Personal Finance management Mobile application.
+- [EcoFinds](https://github.com/kvm404/EchoFinds) - E-commerce platform for buying and selling sustainable products.
+- [RailRee](https://github.com/kvm404/railreel) - Stream movie in while travelling in train in a group, Offiline. 
 
 ## Connect
 
