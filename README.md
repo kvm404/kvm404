@@ -28,23 +28,8 @@
   <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
   <img src="https://img.shields.io/badge/DigitalOcean-0080FF?style=for-the-badge&logo=digitalocean&logoColor=white" alt="DigitalOcean" />
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
-  <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes" />
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=archlinux&logoColor=white" alt="Arch Linux" />
   <img src="https://img.shields.io/badge/Hyprland-58E1FF?style=for-the-badge" alt="Hyprland" />
 </p>
-
-## Featured Projects
-
-- [hospital-management-system](https://github.com/kvm404/hospital-management-system) - A full-stack web application for managing hospital operations.
-- [MediStore](https://github.com/kvm404/MediStore) - A medicine store web project.
-- [GoCareer](https://github.com/kvm404/GoCareer) - Rural career guidance web app.
-- [finman](https://github.com/kvm404/finman) - Personal Finance management Mobile application.
-- [EcoFinds](https://github.com/kvm404/EchoFinds) - E-commerce platform for buying and selling sustainable products.
-- [RailReel](https://github.com/kvm404/railreel) - Stream movie while travelling in train in a group, Offiline. 
-
-## Connect
-
-- Linkedin: [Kumar Vaibhav](https://www.linkedin.com/in/krvaibhav07/)
-
 ---
