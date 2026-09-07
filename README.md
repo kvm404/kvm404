@@ -6,9 +6,10 @@
 
 ## About Me
 
-- Building across frontend, backend, and cloud-native workflows.
-- Interested in practical products that solve real-world problems.
-- Always exploring new tools, workflows, and open-source ideas.
+- DataScience Student 
+- Building full-stack web apps and android apps.
+- Linux user
+- Loves to build cli tools and customizing linux
 
 ## Tech Stack
 
@@ -32,4 +33,3 @@
   <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=archlinux&logoColor=white" alt="Arch Linux" />
   <img src="https://img.shields.io/badge/Hyprland-58E1FF?style=for-the-badge" alt="Hyprland" />
 </p>
----
