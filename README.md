@@ -1,62 +1,80 @@
-# Hi, I'm Kumar Vaibhav <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="wave" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/bento-dark.svg">
+  <img src="assets/bento-light.svg" width="100%" alt="Kumar Vaibhav, fullstack developer studying data science at IIT Madras. Dashboard of GitHub stats: all-time contributions, merged pull requests, longest streak, repositories, languages and a year of activity.">
+</picture>
 
-<p>
-  <em>"01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100"</em>
-</p>
+<br>
 
-<p>
-  <img src="https://komarev.com/ghpvc/?username=kvm404&label=Profile%20views&color=0e75b6&style=flat" alt="profile views" />
-  <img src="https://img.shields.io/github/followers/kvm404?label=Followers&style=flat&color=1f6feb" alt="followers" />
-</p>
+I build things I want to use myself, then polish them until other people can use them too. Lately that means Android apps that work with no internet, Linux tools for my Hyprland setup, and 3D games that run in a browser tab.
 
-## About Me
+<br>
 
-- Building across frontend, backend, and cloud-native workflows.
-- Interested in practical products that solve real-world problems.
-- Always exploring new tools, workflows, and open-source ideas.
+### Selected projects
 
-## Tech Stack
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <a href="https://webradio.krvaibhav.dev"><img src="assets/projects/webradio.webp" width="100%" alt="WebRadio"></a>
+      <br><b><a href="https://webradio.krvaibhav.dev">WebRadio</a></b>
+      <br><sub>30,000 radio stations, only the ones that work. Installs as an app.</sub>
+    </td>
+    <td width="33%" valign="top">
+      <a href="https://github.com/kvm404/phonecam"><img src="assets/projects/phonecam.webp" width="100%" alt="PhoneCam"></a>
+      <br><b><a href="https://github.com/kvm404/phonecam">PhoneCam</a></b>
+      <br><sub>An Android phone as an HD webcam for Linux, over local Wi-Fi.</sub>
+    </td>
+    <td width="33%" valign="top">
+      <a href="https://github.com/kvm404/railreel"><img src="assets/projects/railreel.webp" width="100%" alt="RailReel"></a>
+      <br><b><a href="https://github.com/kvm404/railreel">RailReel</a></b>
+      <br><sub>Movies with friends on a train, in sync on every phone, no internet.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" valign="top">
+      <a href="https://github.com/kvm404/omarchy-laser-pointer"><img src="assets/projects/laser-pointer.webp" width="100%" alt="Omarchy Laser Pointer"></a>
+      <br><b><a href="https://github.com/kvm404/omarchy-laser-pointer">Omarchy Laser Pointer</a></b>
+      <br><sub>A fading on-screen trail for presentations. One-command install.</sub>
+    </td>
+    <td width="33%" valign="top">
+      <a href="https://velmora.krvaibhav.dev"><img src="assets/projects/embers-of-velmora.webp" width="100%" alt="Embers of Velmora"></a>
+      <br><b><a href="https://velmora.krvaibhav.dev">Embers of Velmora</a></b>
+      <br><sub>Survival on a volcanic island, procedural and playable in the browser.</sub>
+    </td>
+    <td width="33%" valign="top">
+      <a href="https://ocr-sih26.vercel.app"><img src="assets/projects/nyayapack.webp" width="100%" alt="NyayaPack"></a>
+      <br><b><a href="https://ocr-sih26.vercel.app">NyayaPack</a></b>
+      <br><sub>Legal Metrology checks from a photo of a package. SIH 2026.</sub>
+    </td>
+  </tr>
+</table>
 
-<p>
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java" />
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  <img src="https://img.shields.io/badge/Vue-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white" alt="Vue" />
-  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
-  <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask" />
-  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/shadcn/ui-111111?style=for-the-badge" alt="shadcn/ui" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap" />
-  <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonwebservices&logoColor=FF9900" alt="AWS" />
-  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
-  <img src="https://img.shields.io/badge/DigitalOcean-0080FF?style=for-the-badge&logo=digitalocean&logoColor=white" alt="DigitalOcean" />
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
-  <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes" />
-  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=archlinux&logoColor=white" alt="Arch Linux" />
-  <img src="https://img.shields.io/badge/Hyprland-58E1FF?style=for-the-badge" alt="Hyprland" />
-</p>
+<p align="right"><sub><a href="https://krvaibhav.dev">More on krvaibhav.dev →</a></sub></p>
 
-## Featured Projects
+### Stack
 
-- [hospital-management-system](https://github.com/kvm404/hospital-management-system) - A healthcare workflow project.
-- [MediStore](https://github.com/kvm404/MediStore) - A medicine store web project.
-- [GoCareer](https://github.com/kvm404/GoCareer) - Rural career guidance web app.
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat-square&logo=kotlin&logoColor=white)
+![Go](https://img.shields.io/badge/Go-00ADD8?style=flat-square&logo=go&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![Vue](https://img.shields.io/badge/Vue-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-000000?style=flat-square&logo=threedotjs&logoColor=white)
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-4285F4?style=flat-square&logo=jetpackcompose&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-000000?style=flat-square&logo=flask&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=flat-square)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
+![Arch Linux](https://img.shields.io/badge/Arch_Linux-1793D1?style=flat-square&logo=archlinux&logoColor=white)
+![Hyprland](https://img.shields.io/badge/Hyprland-58E1FF?style=flat-square&logo=hyprland&logoColor=black)
+![Claude Code](https://img.shields.io/badge/Claude_Code-D97757?style=flat-square&logo=claude&logoColor=white)
 
-## GitHub Stats
+### Say hi
 
-<p>
-  <img height="170" src="https://github-readme-stats.vercel.app/api?username=kvm404&show_icons=true&theme=transparent&hide_border=true" alt="GitHub stats" />
-  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=kvm404&layout=compact&theme=transparent&hide_border=true" alt="Top languages" />
-</p>
+[Portfolio](https://krvaibhav.dev) · [LinkedIn](https://www.linkedin.com/in/krvaibhav-kvm) · [X](https://x.com/krvaibhavm) · [Email](mailto:krvaibhav9999@gmail.com)
 
-## Connect
-
-- GitHub: [@kvm404](https://github.com/kvm404)
-- Location: Earth
-
----
-
-<p align="center"><em>Learning in public, one commit at a time.</em></p>
+<sub>The dashboard is an SVG that rebuilds every night from the GitHub API.</sub>
