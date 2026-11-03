@@ -1,62 +1,167 @@
-# Hi, I'm Kumar Vaibhav <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="28" alt="wave" />
+<img src="assets/banner.svg" width="100%" alt="Kumar Vaibhav. Fullstack developer, data science at IIT Madras.">
 
-<p>
-  <em>"01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100"</em>
+<p align="center">
+  <img src="assets/tagline.svg" width="100%" alt="I build web apps, Android apps that work offline, tools for my Linux setup, and browser games.">
 </p>
 
-<p>
-  <img src="https://komarev.com/ghpvc/?username=kvm404&label=Profile%20views&color=0e75b6&style=flat" alt="profile views" />
-  <img src="https://img.shields.io/github/followers/kvm404?label=Followers&style=flat&color=1f6feb" alt="followers" />
+<p align="center">
+  <a href="https://krvaibhav.dev"><img src="https://img.shields.io/badge/krvaibhav.dev-portfolio-DB2777?style=flat-square" alt="Portfolio"></a>
+  <a href="https://www.linkedin.com/in/krvaibhav-kvm"><img src="https://img.shields.io/badge/LinkedIn-krvaibhav--kvm-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn"></a>
+  <a href="https://x.com/krvaibhavm"><img src="https://img.shields.io/badge/X-@krvaibhavm-111111?style=flat-square&logo=x&logoColor=white" alt="X"></a>
+  <a href="mailto:krvaibhav9999@gmail.com"><img src="https://img.shields.io/badge/Email-say_hi-F97316?style=flat-square&logo=gmail&logoColor=white" alt="Email"></a>
+  <img src="https://komarev.com/ghpvc/?username=kvm404&label=views&color=9333EA&style=flat-square" alt="Profile views">
 </p>
 
-## About Me
+<br>
 
-- Building across frontend, backend, and cloud-native workflows.
-- Interested in practical products that solve real-world problems.
-- Always exploring new tools, workflows, and open-source ideas.
+I'm a data science student at IIT Madras. I build full-stack web apps, Android apps and AI tools, and on the side I keep tweaking my Linux setup. I like projects with a hard constraint: no internet, no backend, no downloaded assets. Below is most of what I've shipped.
 
-## Tech Stack
+<br>
 
-<p>
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java" />
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  <img src="https://img.shields.io/badge/Vue-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white" alt="Vue" />
-  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
-  <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask" />
-  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/shadcn/ui-111111?style=for-the-badge" alt="shadcn/ui" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap" />
-  <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonwebservices&logoColor=FF9900" alt="AWS" />
-  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
-  <img src="https://img.shields.io/badge/DigitalOcean-0080FF?style=for-the-badge&logo=digitalocean&logoColor=white" alt="DigitalOcean" />
-  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
-  <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes" />
-  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=archlinux&logoColor=white" alt="Arch Linux" />
-  <img src="https://img.shields.io/badge/Hyprland-58E1FF?style=for-the-badge" alt="Hyprland" />
+## Web
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://webradio.krvaibhav.dev"><img src="assets/projects/webradio.webp" width="100%" alt="WebRadio"></a>
+      <b>WebRadio</b> &nbsp;<sub>Live</sub><br>
+      <sub>30,000 stations with the dead streams filtered out, ranked by votes and bitrate. Installs as an app.</sub><br>
+      <sub><a href="https://webradio.krvaibhav.dev">Open</a></sub>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://ocr-sih26.vercel.app"><img src="assets/projects/nyayapack.webp" width="100%" alt="NyayaPack"></a>
+      <b>NyayaPack</b> &nbsp;<sub>SIH 2026</sub><br>
+      <sub>Photograph a package and get a Legal Metrology compliance report. The OCR runs in the browser.</sub><br>
+      <sub><a href="https://ocr-sih26.vercel.app">Open</a> · <a href="https://github.com/kvm404/ocr-sih26">Source</a></sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://github.com/kvm404/SIH107"><img src="assets/projects/bis-saarthi.webp" width="100%" alt="BIS Saarthi"></a>
+      <b>BIS Saarthi</b> &nbsp;<sub>SIH 2026</sub><br>
+      <sub>Chat assistant for Indian Standards, in English or Hindi. Every IS number it gives has to cite a source.</sub><br>
+      <sub><a href="https://github.com/kvm404/SIH107">Source</a></sub>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://github.com/kvm404/hospital-management-system"><img src="assets/projects/hms.webp" width="100%" alt="Hospital Management System"></a>
+      <b>Hospital Management System</b><br>
+      <sub>Separate dashboards for admins, doctors and patients, with weekly slot booking and medical history.</sub><br>
+      <sub><a href="https://github.com/kvm404/hospital-management-system">Source</a></sub>
+    </td>
+  </tr>
+</table>
+
+## Android
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://github.com/kvm404/railreel"><img src="assets/projects/railreel.webp" width="100%" alt="RailReel"></a>
+      <b>RailReel</b> &nbsp;<sub>Released</sub><br>
+      <sub>Watch a movie with friends on a train, each on your own phone, in frame-accurate sync. No internet needed.</sub><br>
+      <sub><a href="https://github.com/kvm404/railreel/releases/latest">APK</a> · <a href="https://github.com/kvm404/railreel">Source</a></sub>
+    </td>
+    <td width="50%" valign="top">
+      <a href="https://github.com/kvm404/phonecam"><img src="assets/projects/phonecam.webp" width="100%" alt="PhoneCam"></a>
+      <b>PhoneCam</b> &nbsp;<sub>Released</sub><br>
+      <sub>Your phone as an HD webcam for Linux over local Wi-Fi. Works in Meet, Zoom, Discord and OBS.</sub><br>
+      <sub><a href="https://github.com/kvm404/phonecam/releases/latest">Download</a> · <a href="https://github.com/kvm404/phonecam">Source</a></sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="assets/projects/finman.webp" width="100%" alt="Finman">
+      <b>Finman</b> &nbsp;<sub>Private</sub><br>
+      <sub>Reads bank and UPI SMS on the phone and turns them into a ledger. Tracks FDs, mutual funds and stocks. No backend.</sub>
+    </td>
+    <td width="50%" valign="top">
+      <img src="assets/projects/vyom.webp" width="100%" alt="Vyom">
+      <b>Vyom</b> &nbsp;<sub>Private</sub><br>
+      <sub>An agent on my phone that searches and edits my Obsidian vault, synced over plain git.</sub>
+    </td>
+  </tr>
+</table>
+
+## Games
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <a href="https://velmora.krvaibhav.dev"><img src="assets/projects/embers-of-velmora.webp" width="100%" alt="Embers of Velmora gameplay"></a>
+      <b>Embers of Velmora</b><br>
+      <sub>Survive a volcanic island and light the beacon. Every sound is synthesized at runtime.</sub><br>
+      <sub><a href="https://velmora.krvaibhav.dev">Play</a></sub>
+    </td>
+    <td width="33%" valign="top">
+      <a href="https://sundown-city-online.vercel.app"><img src="assets/projects/sundown-city-online.webp" width="100%" alt="Sundown City Online gameplay"></a>
+      <b>Sundown City Online</b><br>
+      <sub>100 players in one city with proximity voice. The server never sends a single piece of geometry.</sub><br>
+      <sub><a href="https://sundown-city-online.vercel.app">Play</a></sub>
+    </td>
+    <td width="33%" valign="top">
+      <img src="assets/projects/rumblebeans.webp" width="100%" alt="Rumblebeans gameplay">
+      <b>Rumblebeans</b><br>
+      <sub>16-player knockout party game across nine maps. The server runs every match at 60 Hz.</sub>
+    </td>
+  </tr>
+</table>
+
+## Linux
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://github.com/kvm404/omarchy-laser-pointer"><img src="assets/projects/laser-pointer.webp" width="100%" alt="Omarchy Laser Pointer"></a>
+      <b>Omarchy Laser Pointer</b> &nbsp;<sub>Most starred</sub><br>
+      <sub>Draw a glowing trail on screen while you present. Eight colours and a toggle in the bar.</sub><br>
+      <sub><a href="https://github.com/kvm404/omarchy-laser-pointer">Install</a></sub>
+    </td>
+    <td width="50%" valign="top">
+      <b>Also running on my desktop</b>
+      <br><br>
+      <b>Remote Terminal</b><br>
+      <sub>My laptop's tmux sessions from my phone, over Tailscale only. Good for checking on a long agent run while I'm out.</sub>
+      <br><br>
+      <b>Omascreen</b><br>
+      <sub>Screen time in the Omarchy bar. Stores which apps had focus, never the window titles.</sub>
+      <br><br>
+      <b>Eye-Tracking Recorder</b> &nbsp;<sub>In progress</sub><br>
+      <sub>A screen recorder that maps where a student looks while reading a PDF, built for a professor's study.</sub>
+    </td>
+  </tr>
+</table>
+
+<br>
+
+## Stats
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/overview-dark.svg">
+    <img src="assets/overview-light.svg" width="49%" alt="GitHub overview: all-time contributions, merged pull requests, repositories, longest streak.">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/languages-dark.svg">
+    <img src="assets/languages-light.svg" width="49%" alt="Top languages by bytes of code.">
+  </picture>
 </p>
 
-## Featured Projects
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/monthly-dark.svg">
+  <img src="assets/monthly-light.svg" width="100%" alt="Contributions per month over the last year.">
+</picture>
 
-- [hospital-management-system](https://github.com/kvm404/hospital-management-system) - A healthcare workflow project.
-- [MediStore](https://github.com/kvm404/MediStore) - A medicine store web project.
-- [GoCareer](https://github.com/kvm404/GoCareer) - Rural career guidance web app.
+<br>
 
-## GitHub Stats
+## Tools I reach for
 
-<p>
-  <img height="170" src="https://github-readme-stats.vercel.app/api?username=kvm404&show_icons=true&theme=transparent&hide_border=true" alt="GitHub stats" />
-  <img height="170" src="https://github-readme-stats.vercel.app/api/top-langs/?username=kvm404&layout=compact&theme=transparent&hide_border=true" alt="Top languages" />
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/stack-dark.svg">
+    <img src="assets/stack-light.svg" width="80%" alt="TypeScript, Python, JavaScript, Kotlin, Go, Java, React, Next.js, Vue, Three.js, Tailwind CSS, FastAPI, Flask, Express, PostgreSQL, MongoDB, SQLite, Supabase, AWS, Docker, Vercel, Git, Arch Linux, Linux.">
+  </picture>
 </p>
 
-## Connect
+<br>
 
-- GitHub: [@kvm404](https://github.com/kvm404)
-- Location: Earth
-
----
-
-<p align="center"><em>Learning in public, one commit at a time.</em></p>
+<p align="center"><sub>Stats cards rebuild every night from the GitHub API with a workflow in this repo. Icons from <a href="https://skillicons.dev">skillicons.dev</a>.</sub></p>

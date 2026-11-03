@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="44" viewBox="0 0 1000 44" role="img" aria-label="I build web apps that people use every day. I make Android apps that work without internet. I write small tools for my Arch + Hyprland setup. I make browser games where every asset is code.">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0.00" stop-color="#4C1D95"/><stop offset="0.33" stop-color="#9333EA"/><stop offset="0.67" stop-color="#DB2777"/><stop offset="1.00" stop-color="#F97316"/></linearGradient></defs>
+  <style>
+    text { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace; font-size: 19px; fill: url(#g); }
+    .line { animation: cycle 14.0s linear infinite both; }
+    @keyframes cycle {
+      0% { opacity: 0; transform: translateY(8px); }
+      2.00% { opacity: 1; transform: none; }
+      22.00% { opacity: 1; transform: none; }
+      25.00%, 100% { opacity: 0; transform: translateY(-8px); }
+    }
+    @media (prefers-reduced-motion: reduce) { .line { animation: none; } }
+  </style>
+  <g class="line" style="animation-delay:0.0s"><text x="500.0" y="28" text-anchor="middle">I build web apps that people use every day.</text></g><g class="line" style="animation-delay:3.5s;opacity:0"><text x="500.0" y="28" text-anchor="middle">I make Android apps that work without internet.</text></g><g class="line" style="animation-delay:7.0s;opacity:0"><text x="500.0" y="28" text-anchor="middle">I write small tools for my Arch + Hyprland setup.</text></g><g class="line" style="animation-delay:10.5s;opacity:0"><text x="500.0" y="28" text-anchor="middle">I make browser games where every asset is code.</text></g>
+</svg>
