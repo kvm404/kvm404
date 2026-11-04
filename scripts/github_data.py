@@ -56,6 +56,7 @@ query($login: String!, $from: DateTime!, $to: DateTime!) {
 PROFILE_QUERY = """
 query($login: String!, $after: String) {
   user(login: $login) {
+    id
     name
     login
     createdAt
@@ -68,7 +69,10 @@ query($login: String!, $after: String) {
       nodes {
         name
         isPrivate
+        isArchived
         stargazerCount
+        createdAt
+        primaryLanguage { name color }
         languages(first: 12, orderBy: {field: SIZE, direction: DESC}) {
           edges { size node { name color } }
         }
@@ -77,6 +81,68 @@ query($login: String!, $after: String) {
   }
 }
 """
+
+
+TOP_REPOS_QUERY = """
+query($login: String!, $from: DateTime!, $to: DateTime!) {
+  user(login: $login) {
+    contributionsCollection(from: $from, to: $to) {
+      commitContributionsByRepository(maxRepositories: 10) {
+        contributions { totalCount }
+        repository { name owner { login } isPrivate primaryLanguage { name color } }
+      }
+    }
+  }
+}
+"""
+
+HISTORY_QUERY = """
+query($owner: String!, $name: String!, $uid: ID!, $after: String) {
+  repository(owner: $owner, name: $name) {
+    defaultBranchRef {
+      target {
+        ... on Commit {
+          history(first: 100, after: $after, author: {id: $uid}) {
+            pageInfo { hasNextPage endCursor }
+            nodes { authoredDate additions deletions }
+          }
+        }
+      }
+    }
+  }
+}
+"""
+
+# Commit times are shown in this offset from UTC, in minutes. 330 is IST.
+TZ_MINUTES = int(os.environ.get("STATS_TZ_MINUTES", "330"))
+MAX_PAGES_PER_REPO = 30
+
+
+def _commits(token: str, login: str, uid: str, repos: list[dict]) -> list[dict]:
+    """Every commit I authored on the default branch of my own repos."""
+    tz = dt.timezone(dt.timedelta(minutes=TZ_MINUTES))
+    out = []
+    for repo in repos:
+        after = None
+        for _ in range(MAX_PAGES_PER_REPO):
+            r = _query(token, HISTORY_QUERY, {"owner": login, "name": repo["name"], "uid": uid, "after": after})
+            ref = (r.get("repository") or {}).get("defaultBranchRef")
+            if not ref or "history" not in (ref.get("target") or {}):
+                break
+            hist = ref["target"]["history"]
+            for n in hist["nodes"]:
+                when = dt.datetime.fromisoformat(n["authoredDate"].replace("Z", "+00:00")).astimezone(tz)
+                out.append({
+                    "repo": repo["name"],
+                    "private": repo["isPrivate"],
+                    "local": when.isoformat(),
+                    "additions": n["additions"],
+                    "deletions": n["deletions"],
+                })
+            if not hist["pageInfo"]["hasNextPage"]:
+                break
+            after = hist["pageInfo"]["endCursor"]
+    return out
 
 
 def _streaks(days: list[tuple[dt.date, int]], today: dt.date) -> tuple[int, int]:
@@ -167,6 +233,31 @@ def fetch(login: str, token: str) -> dict:
     for l in languages:
         l["percent"] = round(100 * l["bytes"] / total_bytes, 1)
 
+    now = dt.datetime.now(dt.timezone.utc)
+    top = _query(token, TOP_REPOS_QUERY, {
+        "login": login,
+        "from": (now - dt.timedelta(days=365)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "to": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    })["user"]["contributionsCollection"]["commitContributionsByRepository"]
+    top_repos = [
+        {
+            # Private repo names stay private on a public profile.
+            "name": "private repo" if t["repository"]["isPrivate"] else t["repository"]["name"],
+            "private": t["repository"]["isPrivate"],
+            "owned": t["repository"]["owner"]["login"].lower() == login.lower(),
+            "language": (t["repository"]["primaryLanguage"] or {}).get("name"),
+            "color": (t["repository"]["primaryLanguage"] or {}).get("color") or "#8b949e",
+            "commits": t["contributions"]["totalCount"],
+        }
+        for t in top
+    ]
+
+    commits = _commits(token, login, user["id"], repos)
+    punch = [[0] * 24 for _ in range(7)]  # [monday..sunday][hour]
+    for c in commits:
+        when = dt.datetime.fromisoformat(c["local"])
+        punch[when.weekday()][when.hour] += 1
+
     this_year = years[-1]
     last_year_window = sum(c["count"] for c in calendar if dt.date.fromisoformat(c["date"]) > today - dt.timedelta(days=365))
 
@@ -190,6 +281,15 @@ def fetch(login: str, token: str) -> dict:
         "busiest_day": max(calendar, key=lambda c: c["count"]),
         "languages": languages,
         "calendar": calendar,
+        "daily": [{"date": d.isoformat(), "count": n} for d, n in days if d <= today],
+        "top_repos": top_repos,
+        "commits_total": len(commits),
+        "additions": sum(c["additions"] for c in commits),
+        "deletions": sum(c["deletions"] for c in commits),
+        "punchcard": punch,
+        "commit_log": [{"local": c["local"][:16], "add": c["additions"], "del": c["deletions"]} for c in commits],
+        "repo_years": sorted(int(r["createdAt"][:4]) for r in repos),
+        "tz_minutes": TZ_MINUTES,
     }
 
 
