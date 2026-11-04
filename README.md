@@ -14,126 +14,11 @@
 
 <br>
 
-I'm a data science student at IIT Madras. I build full-stack web apps, Android apps and AI tools, and on the side I keep tweaking my Linux setup. I like projects with a hard constraint: no internet, no backend, no downloaded assets. Below is most of what I've shipped.
+I'm a data science student at IIT Madras. I build full-stack web apps, Android apps and AI tools, and I spend too much time tuning my Arch setup. My favourite projects come with a hard constraint, like no internet, no backend or no downloaded assets. You can see them all on [krvaibhav.dev](https://krvaibhav.dev).
 
 <br>
 
-## Web
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://webradio.krvaibhav.dev"><img src="assets/projects/webradio.webp" width="100%" alt="WebRadio"></a>
-      <b>WebRadio</b> &nbsp;<sub>Live</sub><br>
-      <sub>30,000 stations with the dead streams filtered out, ranked by votes and bitrate. Installs as an app.</sub><br>
-      <sub><a href="https://webradio.krvaibhav.dev">Open</a></sub>
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://ocr-sih26.vercel.app"><img src="assets/projects/nyayapack.webp" width="100%" alt="NyayaPack"></a>
-      <b>NyayaPack</b> &nbsp;<sub>SIH 2026</sub><br>
-      <sub>Photograph a package and get a Legal Metrology compliance report. The OCR runs in the browser.</sub><br>
-      <sub><a href="https://ocr-sih26.vercel.app">Open</a> · <a href="https://github.com/kvm404/ocr-sih26">Source</a></sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://github.com/kvm404/SIH107"><img src="assets/projects/bis-saarthi.webp" width="100%" alt="BIS Saarthi"></a>
-      <b>BIS Saarthi</b> &nbsp;<sub>SIH 2026</sub><br>
-      <sub>Chat assistant for Indian Standards, in English or Hindi. Every IS number it gives has to cite a source.</sub><br>
-      <sub><a href="https://github.com/kvm404/SIH107">Source</a></sub>
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://github.com/kvm404/hospital-management-system"><img src="assets/projects/hms.webp" width="100%" alt="Hospital Management System"></a>
-      <b>Hospital Management System</b><br>
-      <sub>Separate dashboards for admins, doctors and patients, with weekly slot booking and medical history.</sub><br>
-      <sub><a href="https://github.com/kvm404/hospital-management-system">Source</a></sub>
-    </td>
-  </tr>
-</table>
-
-## Android
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://github.com/kvm404/railreel"><img src="assets/projects/railreel.webp" width="100%" alt="RailReel"></a>
-      <b>RailReel</b> &nbsp;<sub>Released</sub><br>
-      <sub>Watch a movie with friends on a train, each on your own phone, in frame-accurate sync. No internet needed.</sub><br>
-      <sub><a href="https://github.com/kvm404/railreel/releases/latest">APK</a> · <a href="https://github.com/kvm404/railreel">Source</a></sub>
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://github.com/kvm404/phonecam"><img src="assets/projects/phonecam.webp" width="100%" alt="PhoneCam"></a>
-      <b>PhoneCam</b> &nbsp;<sub>Released</sub><br>
-      <sub>Your phone as an HD webcam for Linux over local Wi-Fi. Works in Meet, Zoom, Discord and OBS.</sub><br>
-      <sub><a href="https://github.com/kvm404/phonecam/releases/latest">Download</a> · <a href="https://github.com/kvm404/phonecam">Source</a></sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="assets/projects/finman.webp" width="100%" alt="Finman">
-      <b>Finman</b> &nbsp;<sub>Private</sub><br>
-      <sub>Reads bank and UPI SMS on the phone and turns them into a ledger. Tracks FDs, mutual funds and stocks. No backend.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="assets/projects/vyom.webp" width="100%" alt="Vyom">
-      <b>Vyom</b> &nbsp;<sub>Private</sub><br>
-      <sub>An agent on my phone that searches and edits my Obsidian vault, synced over plain git.</sub>
-    </td>
-  </tr>
-</table>
-
-## Games
-
-<table>
-  <tr>
-    <td width="33%" valign="top">
-      <a href="https://velmora.krvaibhav.dev"><img src="assets/projects/embers-of-velmora.webp" width="100%" alt="Embers of Velmora gameplay"></a>
-      <b>Embers of Velmora</b><br>
-      <sub>Survive a volcanic island and light the beacon. Every sound is synthesized at runtime.</sub><br>
-      <sub><a href="https://velmora.krvaibhav.dev">Play</a></sub>
-    </td>
-    <td width="33%" valign="top">
-      <a href="https://sundown-city-online.vercel.app"><img src="assets/projects/sundown-city-online.webp" width="100%" alt="Sundown City Online gameplay"></a>
-      <b>Sundown City Online</b><br>
-      <sub>100 players in one city with proximity voice. The server never sends a single piece of geometry.</sub><br>
-      <sub><a href="https://sundown-city-online.vercel.app">Play</a></sub>
-    </td>
-    <td width="33%" valign="top">
-      <img src="assets/projects/rumblebeans.webp" width="100%" alt="Rumblebeans gameplay">
-      <b>Rumblebeans</b><br>
-      <sub>16-player knockout party game across nine maps. The server runs every match at 60 Hz.</sub>
-    </td>
-  </tr>
-</table>
-
-## Linux
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://github.com/kvm404/omarchy-laser-pointer"><img src="assets/projects/laser-pointer.webp" width="100%" alt="Omarchy Laser Pointer"></a>
-      <b>Omarchy Laser Pointer</b> &nbsp;<sub>Most starred</sub><br>
-      <sub>Draw a glowing trail on screen while you present. Eight colours and a toggle in the bar.</sub><br>
-      <sub><a href="https://github.com/kvm404/omarchy-laser-pointer">Install</a></sub>
-    </td>
-    <td width="50%" valign="top">
-      <b>Also running on my desktop</b>
-      <br><br>
-      <b>Remote Terminal</b><br>
-      <sub>My laptop's tmux sessions from my phone, over Tailscale only. Good for checking on a long agent run while I'm out.</sub>
-      <br><br>
-      <b>Omascreen</b><br>
-      <sub>Screen time in the Omarchy bar. Stores which apps had focus, never the window titles.</sub>
-      <br><br>
-      <b>Eye-Tracking Recorder</b> &nbsp;<sub>In progress</sub><br>
-      <sub>A screen recorder that maps where a student looks while reading a PDF, built for a professor's study.</sub>
-    </td>
-  </tr>
-</table>
-
-<br>
-
-## Stats
+## By the numbers
 
 <p align="center">
   <picture>
@@ -146,10 +31,36 @@ I'm a data science student at IIT Madras. I build full-stack web apps, Android a
   </picture>
 </p>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/monthly-dark.svg">
-  <img src="assets/monthly-light.svg" width="100%" alt="Contributions per month over the last year.">
-</picture>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/monthly-dark.svg">
+    <img src="assets/monthly-light.svg" width="100%" alt="Contributions per month over the last year.">
+  </picture>
+</p>
+
+## How I work
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/clock-dark.svg">
+    <img src="assets/clock-light.svg" width="49%" alt="Commits by hour of day, with the share in the morning, afternoon, evening and night.">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/repos-dark.svg">
+    <img src="assets/repos-light.svg" width="49%" alt="The five repos with the most commits in the last 12 months.">
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/years-dark.svg">
+    <img src="assets/years-light.svg" width="49%" alt="Contributions per year.">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/churn-dark.svg">
+    <img src="assets/churn-light.svg" width="49%" alt="Lines of code added and removed across all my commits.">
+  </picture>
+</p>
 
 <br>
 
@@ -164,4 +75,4 @@ I'm a data science student at IIT Madras. I build full-stack web apps, Android a
 
 <br>
 
-<p align="center"><sub>Stats cards rebuild every night from the GitHub API with a workflow in this repo. Icons from <a href="https://skillicons.dev">skillicons.dev</a>.</sub></p>
+<p align="center"><sub>Every card here is an SVG that a workflow in this repo rebuilds each night from the GitHub API. Commit times are in IST. Icons from <a href="https://skillicons.dev">skillicons.dev</a>.</sub></p>

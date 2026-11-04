@@ -2,7 +2,8 @@
 
 Run: GH_TOKEN=... python3 scripts/render.py
 Writes into assets/: banner.svg, tagline.svg, and overview / languages /
-monthly cards in -light and -dark variants.
+monthly, clock, repos, years and churn cards in -light and
+-dark variants.
 """
 
 from __future__ import annotations
@@ -14,7 +15,8 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from github_data import load  # noqa: E402
-from svg import MONO, SANS, esc, monthly_totals, num, top_languages, write  # noqa: E402
+from svg import (MONO, SANS, WEEKDAYS_FULL, active_years, compact, esc, hour_label, metrics,  # noqa: E402
+                 monthly_totals, num, top_languages, write)
 
 LOGIN = "kvm404"
 OUT = os.path.join(os.path.dirname(__file__), "..", "assets")
@@ -230,6 +232,125 @@ def monthly(data: dict, t: dict) -> str:
                 "Monthly contributions: " + ", ".join(f"{m} {c}" for m, c in months), css)
 
 
+def mix(frac: float) -> str:
+    """A colour from the dusk ramp, 0 = violet, 1 = orange."""
+    frac = min(max(frac, 0), 1) * (len(DUSK) - 1)
+    i = min(int(frac), len(DUSK) - 2)
+    f = frac - i
+    a, b = DUSK[i], DUSK[i + 1]
+    rgb = [round(int(a[k:k + 2], 16) * (1 - f) + int(b[k:k + 2], 16) * f) for k in (1, 3, 5)]
+    return "#" + "".join(f"{c:02x}" for c in rgb)
+
+
+def clock(data: dict, t: dict) -> str:
+    W, H = 490, 250
+    m = metrics(data)
+    hours = m["hours"]
+    peak = max(hours) or 1
+    cx, cy, inner, outer = 124, 150, 24, 66
+    spokes = []
+    for h, c in enumerate(hours):
+        a = math.radians(h * 15 - 90)
+        length = 4 + (outer - inner - 4) * c / peak
+        spokes.append(
+            f'<line x1="{cx + inner * math.cos(a):.1f}" y1="{cy + inner * math.sin(a):.1f}" '
+            f'x2="{cx + (inner + length) * math.cos(a):.1f}" y2="{cy + (inner + length) * math.sin(a):.1f}" '
+            f'stroke="{mix(c / peak)}" stroke-width="7" stroke-linecap="round"><title>{hour_label(h)}: {c} commits</title></line>'
+        )
+    ticks = "".join(
+        f'<text class="mono" x="{cx + (outer + 13) * math.cos(math.radians(h * 15 - 90)):.1f}" '
+        f'y="{cy + (outer + 13) * math.sin(math.radians(h * 15 - 90)) + 4:.1f}" text-anchor="middle">{lab}</text>'
+        for h, lab in ((0, "12a"), (6, "6a"), (12, "12p"), (18, "6p"))
+    )
+    total = sum(c for _, c in m["dayparts"]) or 1
+    rows = []
+    for i, (name, c) in enumerate(m["dayparts"]):
+        y = 156 + i * 22
+        share = c / total
+        rows.append(
+            f'<text class="label" x="246" y="{y}">{name}</text>'
+            f'<rect x="330" y="{y - 8}" width="90" height="7" rx="3.5" fill="{t["track"]}"/>'
+            f'<rect class="grow" style="transform-origin:330px 0;animation-delay:{300 + i * 80}ms" x="330" y="{y - 8}" width="{90 * share:.1f}" height="7" rx="3.5" fill="url(#g)"/>'
+            f'<text class="value" x="{W - 26}" y="{y}" text-anchor="end">{share * 100:.0f}%</text>'
+        )
+    body = f"""
+      <g class="spin" style="transform-origin:{cx}px {cy}px">{''.join(spokes)}</g>{ticks}
+      <text x="246" y="108" style="font-family:{SANS};font-size:34px;font-weight:800;letter-spacing:-1px" fill="url(#g)">{hour_label(m['peak_hour'])}</text>
+      <text class="label" x="246" y="130">is my busiest hour (IST)</text>
+      {''.join(rows)}"""
+    css = (".spin { animation: spin 1.2s cubic-bezier(.16,1,.3,1) both; } @keyframes spin { from { opacity: 0; transform: rotate(-90deg) scale(.6); } }"
+           ".grow { animation: grow 900ms cubic-bezier(.16,1,.3,1) both; } @keyframes grow { from { transform: scaleX(0); } }")
+    return card(W, H, t, "Around the clock", body,
+                f"Commits by hour of day. Busiest hour {hour_label(m['peak_hour'])}. "
+                + ", ".join(f"{n} {c * 100 // total}%" for n, c in m["dayparts"]), css)
+
+
+def repos(data: dict, t: dict) -> str:
+    W, H = 490, 250
+    top = data["top_repos"][:5]
+    peak = max(r["commits"] for r in top) or 1
+    rows = []
+    for i, r in enumerate(top):
+        y = 88 + i * 34
+        rows.append(
+            f'<g class="in" style="animation-delay:{i * 80}ms">'
+            f'<circle cx="30" cy="{y - 4.5}" r="4.5" fill="{r["color"]}"/>'
+            f'<text class="value" x="44" y="{y}">{esc(r["name"])}</text></g>'
+            f'<rect x="250" y="{y - 9}" width="170" height="8" rx="4" fill="{t["track"]}"/>'
+            f'<rect class="grow" style="transform-origin:250px 0;animation-delay:{300 + i * 80}ms" x="250" y="{y - 9}" '
+            f'width="{170 * r["commits"] / peak:.1f}" height="8" rx="4" fill="url(#g)"/>'
+            f'<text class="value" x="{W - 26}" y="{y}" text-anchor="end">{r["commits"]}</text>'
+        )
+    css = ".grow { animation: grow 900ms cubic-bezier(.16,1,.3,1) both; } @keyframes grow { from { transform: scaleX(0); } }"
+    body = f'<text class="mono" x="{W - 26}" y="39" text-anchor="end">COMMITS · LAST 12 MONTHS</text>' + "".join(rows)
+    return card(W, H, t, "Where the commits went", body,
+                "Repos with the most commits in the last year: " + ", ".join(f"{r['name']} {r['commits']}" for r in top), css)
+
+
+def years(data: dict, t: dict) -> str:
+    W, H = 490, 210
+    ys = active_years(data)
+    peak = max(y["total"] for y in ys) or 1
+    left, right, base, top = 30, W - 26, 172, 72
+    slot = (right - left) / len(ys)
+    bw = min(56, slot * .55)
+    bars = []
+    for i, y in enumerate(ys):
+        x = left + i * slot + (slot - bw) / 2
+        bh = max(3, (base - top) * y["total"] / peak)
+        bars.append(
+            f'<g class="bar" style="animation-delay:{i * 90}ms;transform-origin:0 {base}px">'
+            f'<rect x="{x:.1f}" y="{base - bh:.1f}" width="{bw:.1f}" height="{bh:.1f}" rx="6" fill="url(#heat)"/></g>'
+            f'<text class="value" x="{x + bw / 2:.1f}" y="{base - bh - 8:.1f}" text-anchor="middle">{num(y["total"])}</text>'
+            f'<text class="mono" x="{x + bw / 2:.1f}" y="{base + 20}" text-anchor="middle">{y["year"]}</text>'
+        )
+    stops = "".join(f'<stop offset="{i / 3:.2f}" stop-color="{c}"/>' for i, c in enumerate(DUSK))
+    defs = f'<defs><linearGradient id="heat" gradientUnits="userSpaceOnUse" x1="0" y1="{base}" x2="0" y2="{top}">{stops}</linearGradient></defs>'
+    css = ".bar { animation: bar 900ms cubic-bezier(.16,1,.3,1) both; } @keyframes bar { from { transform: scaleY(0); } }"
+    return card(W, H, t, "Year by year", defs + "".join(bars),
+                "Contributions per year: " + ", ".join(f"{y['year']} {y['total']}" for y in ys), css)
+
+
+def churn(data: dict, t: dict) -> str:
+    W, H = 490, 210
+    m = metrics(data)
+    add, dele, n = data["additions"], data["deletions"], max(1, data["commits_total"])
+    share = add / max(1, add + dele)
+    body = f"""
+      <text x="28" y="104" style="font-family:{SANS};font-size:40px;font-weight:800;letter-spacing:-1.4px" fill="url(#g)">+{compact(add)}</text>
+      <text class="label" x="28" y="126">lines added</text>
+      <text x="250" y="104" style="font-family:{SANS};font-size:40px;font-weight:800;letter-spacing:-1.4px" fill="{t['muted']}">\u2212{compact(dele)}</text>
+      <text class="label" x="250" y="126">lines removed</text>
+      <g class="grow" style="transform-origin:28px 0">
+        <rect x="28" y="146" width="{(W - 56) * share - 2:.1f}" height="8" rx="4" fill="url(#g)"/>
+        <rect x="{28 + (W - 56) * share + 2:.1f}" y="146" width="{max((W - 56) * (1 - share) - 2, 3):.1f}" height="8" rx="4" fill="{t['muted']}" fill-opacity=".5"/>
+      </g>
+      <text class="mono" x="28" y="182">{num(data['commits_total'])} COMMITS · BUSIEST ON {WEEKDAYS_FULL[m['peak_weekday']].upper()}S · {m['active_days']} ACTIVE DAYS</text>"""
+    css = ".grow { animation: grow 1s cubic-bezier(.16,1,.3,1) 300ms both; } @keyframes grow { from { transform: scaleX(0); } }"
+    return card(W, H, t, "Lines of code", body,
+                f"{add} lines added and {dele} removed across {data['commits_total']} commits.", css)
+
+
 def main() -> None:
     data = load(LOGIN)
     os.makedirs(OUT, exist_ok=True)
@@ -239,6 +360,10 @@ def main() -> None:
         write(os.path.join(OUT, f"overview-{name}.svg"), overview(data, theme))
         write(os.path.join(OUT, f"languages-{name}.svg"), languages(data, theme))
         write(os.path.join(OUT, f"monthly-{name}.svg"), monthly(data, theme))
+        write(os.path.join(OUT, f"clock-{name}.svg"), clock(data, theme))
+        write(os.path.join(OUT, f"repos-{name}.svg"), repos(data, theme))
+        write(os.path.join(OUT, f"years-{name}.svg"), years(data, theme))
+        write(os.path.join(OUT, f"churn-{name}.svg"), churn(data, theme))
     print("rendered", data["generated"])
 
 

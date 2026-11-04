@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="490" height="210" viewBox="0 0 490 210" role="img" aria-label="Contributions per year: 2023 2202, 2024 640, 2025 54, 2026 1603">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0.00" stop-color="#4C1D95"/><stop offset="0.33" stop-color="#9333EA"/><stop offset="0.67" stop-color="#DB2777"/><stop offset="1.00" stop-color="#F97316"/></linearGradient><linearGradient id="gv" x1="0" y1="0" x2="0" y2="1"><stop offset="0.00" stop-color="#4C1D95"/><stop offset="0.33" stop-color="#9333EA"/><stop offset="0.67" stop-color="#DB2777"/><stop offset="1.00" stop-color="#F97316"/></linearGradient></defs>
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; fill: #1f2328; }
+    .label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; fill: #59636e; }
+    .value { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; fill: #1f2328; }
+    .mono { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace; font-size: 11px; fill: #59636e; }
+    .in { animation: in 700ms cubic-bezier(.16,1,.3,1) both; }
+    @keyframes in { from { opacity: 0; transform: translateY(6px); } }
+    .bar { animation: bar 900ms cubic-bezier(.16,1,.3,1) both; } @keyframes bar { from { transform: scaleY(0); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+  <rect x=".5" y=".5" width="489" height="209" rx="12" fill="#ffffff" stroke="#d0d7de"/>
+  <rect x="24" y="26" width="4" height="16" rx="2" fill="url(#gv)"/>
+  <text class="title" x="36" y="39">Year by year</text>
+  <defs><linearGradient id="heat" gradientUnits="userSpaceOnUse" x1="0" y1="172" x2="0" y2="72"><stop offset="0.00" stop-color="#4C1D95"/><stop offset="0.33" stop-color="#9333EA"/><stop offset="0.67" stop-color="#DB2777"/><stop offset="1.00" stop-color="#F97316"/></linearGradient></defs><g class="bar" style="animation-delay:0ms;transform-origin:0 172px"><rect x="56.2" y="72.0" width="56.0" height="100.0" rx="6" fill="url(#heat)"/></g><text class="value" x="84.2" y="64.0" text-anchor="middle">2,202</text><text class="mono" x="84.2" y="192" text-anchor="middle">2023</text><g class="bar" style="animation-delay:90ms;transform-origin:0 172px"><rect x="164.8" y="142.9" width="56.0" height="29.1" rx="6" fill="url(#heat)"/></g><text class="value" x="192.8" y="134.9" text-anchor="middle">640</text><text class="mono" x="192.8" y="192" text-anchor="middle">2024</text><g class="bar" style="animation-delay:180ms;transform-origin:0 172px"><rect x="273.2" y="169.0" width="56.0" height="3.0" rx="6" fill="url(#heat)"/></g><text class="value" x="301.2" y="161.0" text-anchor="middle">54</text><text class="mono" x="301.2" y="192" text-anchor="middle">2025</text><g class="bar" style="animation-delay:270ms;transform-origin:0 172px"><rect x="381.8" y="99.2" width="56.0" height="72.8" rx="6" fill="url(#heat)"/></g><text class="value" x="409.8" y="91.2" text-anchor="middle">1,603</text><text class="mono" x="409.8" y="192" text-anchor="middle">2026</text>
+</svg>
