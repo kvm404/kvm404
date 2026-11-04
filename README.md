@@ -5,50 +5,16 @@
 
 <br>
 
-I build things I want to use myself, then polish them until other people can use them too. Lately that means Android apps that work with no internet, Linux tools for my Hyprland setup, and 3D games that run in a browser tab.
+I build things I want to use myself, then keep polishing until other people can use them too. Right now that's [PhoneCam](https://github.com/kvm404/phonecam), which turns an Android phone into a webcam for Linux, and [RailReel](https://github.com/kvm404/railreel), for watching a movie in sync with friends on a train with no internet. More on [krvaibhav.dev](https://krvaibhav.dev).
 
 <br>
 
-### Selected projects
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/rhythm-dark.svg">
+  <img src="assets/rhythm-light.svg" width="100%" alt="When I work: commits by hour of day and day of week, lines added and removed, the repos with the most commits this year, contributions per year, and a load average of contributions per day.">
+</picture>
 
-<table>
-  <tr>
-    <td width="33%" valign="top">
-      <a href="https://webradio.krvaibhav.dev"><img src="assets/projects/webradio.webp" width="100%" alt="WebRadio"></a>
-      <br><b><a href="https://webradio.krvaibhav.dev">WebRadio</a></b>
-      <br><sub>30,000 radio stations, only the ones that work. Installs as an app.</sub>
-    </td>
-    <td width="33%" valign="top">
-      <a href="https://github.com/kvm404/phonecam"><img src="assets/projects/phonecam.webp" width="100%" alt="PhoneCam"></a>
-      <br><b><a href="https://github.com/kvm404/phonecam">PhoneCam</a></b>
-      <br><sub>An Android phone as an HD webcam for Linux, over local Wi-Fi.</sub>
-    </td>
-    <td width="33%" valign="top">
-      <a href="https://github.com/kvm404/railreel"><img src="assets/projects/railreel.webp" width="100%" alt="RailReel"></a>
-      <br><b><a href="https://github.com/kvm404/railreel">RailReel</a></b>
-      <br><sub>Movies with friends on a train, in sync on every phone, no internet.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="33%" valign="top">
-      <a href="https://github.com/kvm404/omarchy-laser-pointer"><img src="assets/projects/laser-pointer.webp" width="100%" alt="Omarchy Laser Pointer"></a>
-      <br><b><a href="https://github.com/kvm404/omarchy-laser-pointer">Omarchy Laser Pointer</a></b>
-      <br><sub>A fading on-screen trail for presentations. One-command install.</sub>
-    </td>
-    <td width="33%" valign="top">
-      <a href="https://velmora.krvaibhav.dev"><img src="assets/projects/embers-of-velmora.webp" width="100%" alt="Embers of Velmora"></a>
-      <br><b><a href="https://velmora.krvaibhav.dev">Embers of Velmora</a></b>
-      <br><sub>Survival on a volcanic island, procedural and playable in the browser.</sub>
-    </td>
-    <td width="33%" valign="top">
-      <a href="https://ocr-sih26.vercel.app"><img src="assets/projects/nyayapack.webp" width="100%" alt="NyayaPack"></a>
-      <br><b><a href="https://ocr-sih26.vercel.app">NyayaPack</a></b>
-      <br><sub>Legal Metrology checks from a photo of a package. SIH 2026.</sub>
-    </td>
-  </tr>
-</table>
-
-<p align="right"><sub><a href="https://krvaibhav.dev">More on krvaibhav.dev →</a></sub></p>
+<br>
 
 ### Stack
 
@@ -77,4 +43,4 @@ I build things I want to use myself, then polish them until other people can use
 
 [Portfolio](https://krvaibhav.dev) · [LinkedIn](https://www.linkedin.com/in/krvaibhav-kvm) · [X](https://x.com/krvaibhavm) · [Email](mailto:krvaibhav9999@gmail.com)
 
-<sub>The dashboard is an SVG that rebuilds every night from the GitHub API.</sub>
+<sub>Both grids are SVGs that a workflow in this repo rebuilds every night from the GitHub API. Commit times are in IST.</sub>

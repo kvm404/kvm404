@@ -1,7 +1,7 @@
 """Render the profile as one bento-grid dashboard.
 
 Run: GH_TOKEN=... python3 scripts/render.py
-Writes assets/bento-{light,dark}.svg.
+Writes assets/bento-{light,dark}.svg and assets/rhythm-{light,dark}.svg.
 """
 
 from __future__ import annotations
@@ -15,7 +15,8 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from github_data import load  # noqa: E402
-from svg import MONO, SANS, calendar_weeks, esc, heatmap, monthly_totals, num, top_languages, write  # noqa: E402
+from svg import (MONO, SANS, WEEKDAYS, WEEKDAYS_FULL, active_years, calendar_weeks, compact, esc, heatmap,  # noqa: E402
+                 hour_label, metrics, monthly_totals, num, top_languages, write)
 
 LOGIN = "kvm404"
 OUT = os.path.join(os.path.dirname(__file__), "..", "assets")
@@ -23,12 +24,12 @@ OUT = os.path.join(os.path.dirname(__file__), "..", "assets")
 THEMES = {
     "light": {
         "tile": "#ffffff", "border": "#e4e7eb", "text": "#0f172a", "muted": "#64748b", "faint": "#f1f5f9",
-        "accent": "#059669", "accent_soft": "#d1fae5",
+        "accent": "#059669", "accent_soft": "#c7f0de", "minus": "#f43f5e",
         "heat": ["#eef2f6", "#a7f3d0", "#4ade80", "#10b981", "#047857"],
     },
     "dark": {
         "tile": "#11161d", "border": "#262c36", "text": "#f1f5f9", "muted": "#8b96a5", "faint": "#1b222c",
-        "accent": "#34d399", "accent_soft": "#0f2e25",
+        "accent": "#34d399", "accent_soft": "#134235", "minus": "#fb7185",
         "heat": ["#1b222c", "#064e3b", "#047857", "#10b981", "#6ee7b7"],
     },
 }
@@ -111,7 +112,7 @@ def bento(data: dict, t: dict, photo: str) -> str:
     tiles.append(tile(sx, r2, col, 200, t, 3, f"""
       <text class="big" x="{sx + 22}" y="{r2 + 84}">{data['streak_longest']}<tspan class="unit" dx="6">days</tspan></text>
       <text class="body" x="{sx + 22}" y="{r2 + 106}">longest streak</text>
-      <text class="small" x="{sx + 22}" y="{r2 + 146}">Last 14 days</text>
+      <text class="small" x="{sx + 22}" y="{r2 + 146}">Current {data['streak_current']} · last 14 days</text>
       {dots}""", "Streak"))
 
     # Repos
@@ -153,8 +154,15 @@ def bento(data: dict, t: dict, photo: str) -> str:
       {hm}""", "Last 12 months"))
     H = r3 + h3
 
+    return frame(W, H, t, "".join(tiles),
+                 f"Kumar Vaibhav, fullstack developer. {num(data['contributions_all_time'])} contributions, "
+                 f"{data['prs_merged']} merged pull requests, {data['repos']} repositories, {data['streak_longest']} day longest streak.")
+
+
+def frame(w: float, h: float, t: dict, body: str, label: str) -> str:
+    circ = 2 * math.pi * 30
     return f"""
-<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Kumar Vaibhav, fullstack developer. {num(data['contributions_all_time'])} contributions, {data['prs_merged']} merged pull requests, {data['repos']} repositories, {data['streak_longest']} day longest streak.">
+<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h:.0f}" viewBox="0 0 {w} {h:.0f}" role="img" aria-label="{esc(label)}">
   <style>
     .label {{ font-family: {MONO}; font-size: 11px; letter-spacing: 1.6px; fill: {t['muted']}; }}
     .h1 {{ font-family: {SANS}; font-size: 30px; font-weight: 800; letter-spacing: -.8px; fill: {t['text']}; }}
@@ -163,22 +171,189 @@ def bento(data: dict, t: dict, photo: str) -> str:
     .body {{ font-family: {SANS}; font-size: 14px; fill: {t['muted']}; }}
     .strong {{ font-weight: 700; fill: {t['text']}; }}
     .small {{ font-family: {SANS}; font-size: 12.5px; fill: {t['muted']}; }}
+    .tick {{ font-family: {MONO}; font-size: 10.5px; fill: {t['muted']}; }}
+    .num {{ font-family: {MONO}; font-size: 12px; font-weight: 600; fill: {t['text']}; }}
     .chip {{ font-family: {SANS}; font-size: 12.5px; font-weight: 600; fill: {t['text']}; }}
     .ringtxt {{ font-family: {SANS}; font-size: 14px; font-weight: 700; fill: {t['text']}; }}
     .tile {{ animation: tile 700ms cubic-bezier(.16,1,.3,1) both; }}
     .draw {{ stroke-dasharray: 1; animation: draw 1.6s cubic-bezier(.45,0,.15,1) 400ms both; }}
     .ring {{ animation: ring 1.4s cubic-bezier(.16,1,.3,1) 400ms both; }}
     .grow {{ animation: grow 1s cubic-bezier(.16,1,.3,1) 500ms both; }}
+    .rise {{ animation: rise 900ms cubic-bezier(.16,1,.3,1) 400ms both; }}
+    .pop {{ animation: pop 600ms cubic-bezier(.34,1.56,.64,1) both; transform-box: fill-box; transform-origin: center; }}
     .pulse {{ animation: pulse 2s ease-in-out infinite; }}
     @keyframes tile {{ from {{ opacity: 0; transform: translateY(10px); }} }}
     @keyframes draw {{ from {{ stroke-dashoffset: 1; }} }}
     @keyframes ring {{ from {{ stroke-dasharray: 0 {circ:.1f}; }} }}
     @keyframes grow {{ from {{ transform: scaleX(0); }} }}
+    @keyframes rise {{ from {{ transform: scaleY(0); }} }}
+    @keyframes pop {{ from {{ transform: scale(0); }} }}
     @keyframes pulse {{ 50% {{ opacity: .3; }} }}
-    @media (prefers-reduced-motion: reduce) {{ .tile, .draw, .ring, .grow, .pulse {{ animation: none; }} }}
+    @media (prefers-reduced-motion: reduce) {{ .tile, .draw, .ring, .grow, .rise, .pop, .pulse {{ animation: none; }} }}
   </style>
-  {''.join(tiles)}
+  {body}
 </svg>"""
+
+
+def rhythm(data: dict, t: dict) -> str:
+    """Second grid: when and how the work happens."""
+    m = metrics(data)
+    col = (W - 3 * GAP) / 4
+    half = col * 2 + GAP
+    tiles = []
+
+    # Hour-of-day clock, with the day split into four parts beside it.
+    ra, ha = 0, 224
+    hours = m["hours"]
+    peak = max(hours) or 1
+    ccx, ccy, inner, outer = half - 118, ra + 116, 30, 76
+    spokes = []
+    for h, c in enumerate(hours):
+        a = math.radians(h * 15 - 90)
+        length = 4 + (outer - inner - 4) * c / peak
+        x1, y1 = ccx + inner * math.cos(a), ccy + inner * math.sin(a)
+        x2, y2 = ccx + (inner + length) * math.cos(a), ccy + (inner + length) * math.sin(a)
+        op = 1 if h == m["peak_hour"] else .3 + .5 * c / peak
+        spokes.append(
+            f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{t["accent"]}" stroke-opacity="{op:.2f}" '
+            f'stroke-width="7" stroke-linecap="round"><title>{hour_label(h)}: {c} commits</title></line>'
+        )
+    ticks = "".join(
+        f'<text class="tick" x="{ccx + (outer + 14) * math.cos(math.radians(h * 15 - 90)):.1f}" '
+        f'y="{ccy + (outer + 14) * math.sin(math.radians(h * 15 - 90)) + 4:.1f}" text-anchor="middle">{lab}</text>'
+        for h, lab in ((0, "12a"), (6, "6a"), (12, "12p"), (18, "6p"))
+    )
+    total = sum(c for _, c in m["dayparts"]) or 1
+    parts = []
+    for i, (name, c) in enumerate(m["dayparts"]):
+        y = ra + 136 + i * 20
+        share = c / total
+        parts.append(
+            f'<text class="small" x="22" y="{y}">{name}</text>'
+            f'<rect x="100" y="{y - 8}" width="110" height="7" rx="3.5" fill="{t["faint"]}"/>'
+            f'<rect class="grow" style="transform-origin:100px 0" x="100" y="{y - 8}" width="{110 * share:.1f}" height="7" rx="3.5" fill="{t["accent"]}"/>'
+            f'<text class="num" x="252" y="{y}" text-anchor="end">{share * 100:.0f}%</text>'
+        )
+    tiles.append(tile(0, ra, half, ha, t, 0, f"""
+      <text class="big" x="22" y="{ra + 84}">{hour_label(m['peak_hour'])}</text>
+      <text class="body" x="22" y="{ra + 106}">is when I commit most (IST)</text>
+      {''.join(parts)}
+      <circle cx="{ccx}" cy="{ccy}" r="{inner - 9}" fill="{t['faint']}"/>
+      <g class="pop">{''.join(spokes)}</g>{ticks}""", "When I commit"))
+
+    # Weekday bars
+    wx = half + GAP
+    wk = m["weekday_contrib"]
+    wpeak = max(wk) or 1
+    bw, slot, base = 18, (col - 44) / 7, ra + ha - 38
+    bars = []
+    for i, c in enumerate(wk):
+        bx = wx + 22 + i * slot + (slot - bw) / 2
+        bh = max(3, 70 * c / wpeak)
+        hot = i == m["peak_weekday"]
+        bars.append(
+            f'<rect x="{bx:.1f}" y="{base - bh:.1f}" width="{bw}" height="{bh:.1f}" rx="4" fill="{t["accent"] if hot else t["accent_soft"]}">'
+            f'<title>{WEEKDAYS_FULL[i]}: {c}</title></rect>'
+            f'<text class="tick" x="{bx + bw / 2:.1f}" y="{base + 18}" text-anchor="middle"{" style=\"fill:" + t["text"] + "\"" if hot else ""}>{WEEKDAYS[i][0]}</text>'
+        )
+    tiles.append(tile(wx, ra, col, ha, t, 1, f"""
+      <text class="big" x="{wx + 22}" y="{ra + 84}">{WEEKDAYS[m['peak_weekday']]}</text>
+      <text class="body" x="{wx + 22}" y="{ra + 106}">{m['weekend_share'] * 100:.0f}% on weekends</text>
+      <g class="rise" style="transform-origin:0 {base}px">{''.join(bars)}</g>""", "Busiest day"))
+
+    # Lines added and removed
+    lx = wx + col + GAP
+    add, dele = data["additions"], data["deletions"]
+    share = add / max(1, add + dele)
+    bar_w = col - 44
+    tiles.append(tile(lx, ra, col, ha, t, 2, f"""
+      <text class="big" x="{lx + 22}" y="{ra + 84}">+{compact(add)}</text>
+      <text class="body" x="{lx + 22}" y="{ra + 106}">lines added, {compact(dele)} removed</text>
+      <g class="grow" style="transform-origin:{lx + 22}px 0">
+        <rect x="{lx + 22}" y="{ra + 140}" width="{bar_w * share - 2:.1f}" height="12" rx="4" fill="{t['accent']}"/>
+        <rect x="{lx + 22 + bar_w * share + 2:.1f}" y="{ra + 140}" width="{max(bar_w * (1 - share) - 2, 3):.1f}" height="12" rx="4" fill="{t['minus']}"/>
+      </g>
+      <circle cx="{lx + 27}" cy="{ra + 172}" r="4" fill="{t['accent']}"/><text class="small" x="{lx + 37}" y="{ra + 176}">added</text>
+      <circle cx="{lx + 92}" cy="{ra + 172}" r="4" fill="{t['minus']}"/><text class="small" x="{lx + 102}" y="{ra + 176}">removed</text>
+      <text class="small" x="{lx + 22}" y="{ra + 202}">across {num(data['commits_total'])} commits</text>""", "Lines of code"))
+
+    # Punch card: weekday by hour
+    rb = ra + ha + GAP
+    left, top, cw, rh = 74, rb + 64, (W - 74 - 26) / 24, 22
+    punch = data["punchcard"]
+    ppeak = max(max(r) for r in punch) or 1
+    dots = []
+    for w in range(7):
+        y = top + w * rh
+        dots.append(f'<text class="tick" x="22" y="{y + 4}">{WEEKDAYS[w]}</text>')
+        for h in range(24):
+            c = punch[w][h]
+            x = left + h * cw + cw / 2
+            if c:
+                r = 2.2 + 7.3 * math.sqrt(c / ppeak)
+                dots.append(
+                    f'<circle class="pop" style="animation-delay:{300 + h * 25}ms" cx="{x:.1f}" cy="{y}" r="{r:.1f}" '
+                    f'fill="{t["accent"]}" fill-opacity="{.35 + .65 * c / ppeak:.2f}"><title>{WEEKDAYS_FULL[w]} {hour_label(h)}: {c}</title></circle>'
+                )
+            else:
+                dots.append(f'<circle cx="{x:.1f}" cy="{y}" r="1.6" fill="{t["border"]}"/>')
+    for h in range(0, 24, 3):
+        dots.append(f'<text class="tick" x="{left + h * cw + cw / 2:.1f}" y="{top + 7 * rh + 8}" text-anchor="middle">{hour_label(h).replace(" ", "")}</text>')
+    hb = 64 + 7 * rh + 28
+    tiles.append(tile(0, rb, W, hb, t, 3, f"""
+      <text class="label" x="{W - 22}" y="{rb + 32}" text-anchor="end">{num(data['commits_total'])} COMMITS · {m['night_share'] * 100:.0f}% AFTER 10 PM</text>
+      {''.join(dots)}""", "Commits by day and hour"))
+
+    # Top repos this year
+    rc = rb + hb + GAP
+    hc = 212
+    repos = data["top_repos"][:5]
+    rpeak = max(r["commits"] for r in repos) or 1
+    rows = []
+    for i, r in enumerate(repos):
+        y = rc + 70 + i * 28
+        rows.append(
+            f'<circle cx="27" cy="{y - 4.5}" r="5" fill="{r["color"]}"/>'
+            f'<text class="body strong" x="40" y="{y}">{esc(r["name"])}</text>'
+            f'<rect x="250" y="{y - 10}" width="{half - 250 - 66}" height="10" rx="5" fill="{t["faint"]}"/>'
+            f'<rect class="grow" style="transform-origin:250px 0;animation-delay:{500 + i * 80}ms" x="250" y="{y - 10}" '
+            f'width="{(half - 250 - 66) * r["commits"] / rpeak:.1f}" height="10" rx="5" fill="{t["accent"]}"/>'
+            f'<text class="num" x="{half - 22}" y="{y}" text-anchor="end">{r["commits"]}</text>'
+        )
+    tiles.append(tile(0, rc, half, hc, t, 4, "".join(rows), "Most commits, last 12 months"))
+
+    # Year by year
+    yx = half + GAP
+    years = active_years(data)
+    ypeak = max(y["total"] for y in years) or 1
+    yslot = (col - 44) / len(years)
+    ybw = min(30, yslot * .6)
+    ybase = rc + hc - 40
+    ybars = []
+    for i, y in enumerate(years):
+        bx = yx + 22 + i * yslot + (yslot - ybw) / 2
+        bh = max(3, 96 * y["total"] / ypeak)
+        last = i == len(years) - 1
+        ybars.append(
+            f'<rect x="{bx:.1f}" y="{ybase - bh:.1f}" width="{ybw:.1f}" height="{bh:.1f}" rx="5" fill="{t["accent"] if last else t["accent_soft"]}"/>'
+            f'<text class="num" x="{bx + ybw / 2:.1f}" y="{ybase - bh - 7:.1f}" text-anchor="middle">{compact(y["total"])}</text>'
+            f'<text class="tick" x="{bx + ybw / 2:.1f}" y="{ybase + 20}" text-anchor="middle">\u2019{str(y["year"])[2:]}</text>'
+        )
+    tiles.append(tile(yx, rc, col, hc, t, 5, f'<g class="rise" style="transform-origin:0 {ybase}px">{"".join(ybars)}</g>', "Year by year"))
+
+    # Load average, in contributions a day
+    ox = yx + col + GAP
+    l1, l7, l365 = m["load"]
+    tiles.append(tile(ox, rc, col, hc, t, 6, f"""
+      <text x="{ox + 22}" y="{rc + 90}" style="font-family:{MONO};font-size:22px;font-weight:700;letter-spacing:-.5px" fill="{t['text']}">{l1:.2f} <tspan fill="{t['muted']}">{l7:.2f} {l365:.2f}</tspan></text>
+      <text class="small" x="{ox + 22}" y="{rc + 124}">contributions a day over</text>
+      <text class="small" x="{ox + 22}" y="{rc + 142}">the last week, month, year</text>
+      <text class="small" x="{ox + 22}" y="{rc + 182}">{m['active_days']} active days this year</text>""", "Load average"))
+
+    H = rc + hc
+    return frame(W, H, t, "".join(tiles),
+                 f"When I work: most commits around {hour_label(m['peak_hour'])}, busiest on {WEEKDAYS_FULL[m['peak_weekday']]}s. "
+                 f"{compact(add)} lines added across {data['commits_total']} commits. Top repo this year: {repos[0]['name']}.")
 
 
 def main() -> None:
@@ -187,6 +362,7 @@ def main() -> None:
         photo = "data:image/webp;base64," + base64.b64encode(f.read()).decode()
     for name, theme in THEMES.items():
         write(os.path.join(OUT, f"bento-{name}.svg"), bento(data, theme, photo))
+        write(os.path.join(OUT, f"rhythm-{name}.svg"), rhythm(data, theme))
     print("rendered", data["generated"])
 
 
