@@ -1,4 +1,4 @@
-<img src="assets/desktop.svg" width="100%" alt="A Hyprland desktop with four tiled terminals: fastfetch for kvm404, a language breakdown, GitHub stats and a year of contributions.">
+<img src="assets/btop.svg" width="100%" alt="A btop-style system monitor of my GitHub activity: daily contributions for the last six months, share of work by weekday, languages, lines added and removed per month, and the repos with the most commits.">
 
 ### hey, I'm Kumar
 
@@ -6,31 +6,14 @@ I study data science at IIT Madras and build web apps, Android apps and the odd 
 
 <br>
 
-## ~/projects
+## how to read the monitor
 
-| | Project | What it does | Stack |
-| :-: | --- | --- | --- |
-| <kbd>live</kbd> | [**WebRadio**](https://webradio.krvaibhav.dev) | 30,000 radio stations with the dead streams already filtered out. Installs as an app. | React 19, TypeScript, Supabase |
-| <kbd>release</kbd> | [**PhoneCam**](https://github.com/kvm404/phonecam) | Turns an Android phone into an HD webcam for Linux over local Wi-Fi. Pair with a QR code in the terminal. | Kotlin, Go, GStreamer |
-| <kbd>release</kbd> | [**RailReel**](https://github.com/kvm404/railreel) | Watch a movie with friends on a train or flight, each on your own phone, in sync, with no internet. | React Native, Kotlin |
-| <kbd>plugin</kbd> | [**Omarchy Laser Pointer**](https://github.com/kvm404/omarchy-laser-pointer) | Draw a fading trail on screen while you present. My most-starred repo. | QML, Quickshell |
-| <kbd>live</kbd> | [**NyayaPack**](https://ocr-sih26.vercel.app) | Photograph a package and get a Legal Metrology compliance report. Smart India Hackathon 2026. | Next.js, Tesseract.js |
-| <kbd>play</kbd> | [**Embers of Velmora**](https://velmora.krvaibhav.dev) | First-person survival on a volcanic island, in a browser tab. Every sound is synthesized at runtime. | Three.js, Rapier3D |
-| <kbd>play</kbd> | [**Sundown City Online**](https://sundown-city-online.vercel.app) | A city sandbox for 100 players with proximity voice chat. The whole map grows from one seed. | Three.js, WebSockets |
-| <kbd>repo</kbd> | [**Hospital Management System**](https://github.com/kvm404/hospital-management-system) | Separate dashboards for admins, doctors and patients, with slot booking and records. | Flask, SQLite |
-| <kbd>repo</kbd> | [**MediStore**](https://github.com/kvm404/MediStore) | Pharmacy inventory with batch tracking, first-expiry-first-out sales and profit reports. | Flask |
-
-<br>
-
-## try one
-
-```sh
-# laser pointer for your Omarchy bar
-omarchy plugin add https://github.com/kvm404/omarchy-laser-pointer.git --enable
-
-# phone as a webcam (grab the package from the latest release first)
-sudo pacman -U ./phonecam-*-x86_64.pkg.tar.zst
-sudo phonecam setup && phonecam start
+```text
+contributions   one column per day for the last 26 weeks, green to red as it gets busier
+weekday list    my share of the year's work on each day of the week
+languages       bytes of code across my repos, markup left out
+lines           lines added (up) and removed (down) per month
+repos           where my commits went in the last 12 months
 ```
 
 <br>
@@ -64,4 +47,4 @@ agents   = ["Claude Code", "Codex"]
 
 <br>
 
-<sub>The desktop at the top is an SVG. A GitHub Action rebuilds it every night from the GraphQL API, so the numbers stay current.</sub>
+<sub>The monitor is one SVG that a GitHub Action redraws every night from the GraphQL API. No btop was harmed.</sub>

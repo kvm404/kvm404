@@ -92,3 +92,74 @@ def monthly_totals(data: dict, months: int = 12) -> list[tuple[str, int]]:
 def write(path: str, svg: str) -> None:
     with open(path, "w") as f:
         f.write(svg.strip() + "\n")
+
+
+WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+WEEKDAYS_FULL = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+
+def hour_label(h: int) -> str:
+    return f"{h % 12 or 12} {'am' if h < 12 else 'pm'}"
+
+
+def metrics(data: dict) -> dict:
+    """Numbers derived from the raw snapshot, shared by every layout."""
+    punch = data["punchcard"]
+    hours = [sum(punch[w][h] for w in range(7)) for h in range(24)]
+    weekday_commits = [sum(row) for row in punch]
+    commits = sum(hours) or 1
+
+    # Weekday totals from the contribution calendar (includes private work).
+    weekday_contrib = [0] * 7
+    for day in data["calendar"]:
+        weekday_contrib[dt.date.fromisoformat(day["date"]).weekday()] += day["count"]
+
+    daily = [d["count"] for d in data["daily"]]
+    last_year = daily[-365:]
+    active = sum(1 for c in last_year if c)
+
+    def avg(n):
+        window = daily[-n:]
+        return sum(window) / max(1, len(window))
+
+    months = monthly_totals(data, 13)[:-1]
+    best_month = max(months, key=lambda m: m[1])
+    night = sum(hours[h] for h in (22, 23, 0, 1, 2, 3))
+    morning = sum(hours[h] for h in range(5, 12))
+    day_ = sum(hours[h] for h in range(12, 18))
+    evening = sum(hours[h] for h in range(18, 22))
+
+    peak_hour = max(range(24), key=lambda h: hours[h])
+    return {
+        "hours": hours,
+        "peak_hour": peak_hour,
+        "weekday_commits": weekday_commits,
+        "weekday_contrib": weekday_contrib,
+        "peak_weekday": max(range(7), key=lambda w: weekday_contrib[w]),
+        "weekend_share": (weekday_contrib[5] + weekday_contrib[6]) / max(1, sum(weekday_contrib)),
+        "dayparts": [("Morning", morning), ("Afternoon", day_), ("Evening", evening), ("Night", night)],
+        "night_share": night / commits,
+        "active_days": active,
+        "per_active_day": sum(last_year) / max(1, active),
+        "load": (avg(7), avg(30), avg(365)),
+        "best_month": best_month,
+        "months": months,
+    }
+
+
+def compact(n: float) -> str:
+    """699,000 -> 699k, 1,250,000 -> 1.3M."""
+    if n >= 1_000_000:
+        return f"{n / 1_000_000:.1f}M"
+    if n >= 10_000:
+        return f"{n / 1000:.0f}k"
+    if n >= 1000:
+        return f"{n / 1000:.1f}k"
+    return str(int(n))
+
+
+def active_years(data: dict) -> list[dict]:
+    """Years from the first one with real activity onward."""
+    years = data["years"]
+    start = next((i for i, y in enumerate(years) if y["total"] >= 10), 0)
+    return years[start:]

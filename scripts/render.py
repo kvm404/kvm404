@@ -1,7 +1,11 @@
-"""Render the profile as a tiled Hyprland desktop in Tokyo Night colours.
+"""Render GitHub stats as a btop-style system monitor in Tokyo Night colours.
 
 Run: GH_TOKEN=... python3 scripts/render.py
-Writes assets/desktop.svg.
+Writes assets/btop.svg.
+
+The panels map loosely onto btop's: cpu is daily contributions, the core list
+is weekdays, mem is languages, net is lines added and removed, and proc lists
+the repos with the most commits.
 """
 
 from __future__ import annotations
@@ -13,16 +17,16 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from github_data import load  # noqa: E402
-from svg import MONO, calendar_weeks, esc, heatmap, num, top_languages, write  # noqa: E402
+from svg import MONO, WEEKDAYS, compact, esc, hour_label, metrics, num, top_languages, write  # noqa: E402
 
 LOGIN = "kvm404"
 OUT = os.path.join(os.path.dirname(__file__), "..", "assets")
 
 # Tokyo Night
 BG = "#1a1b26"
-BG_DARK = "#16161e"
 FG = "#c0caf5"
 DIM = "#565f89"
+LINE = "#3b4261"
 BLUE = "#7aa2f7"
 CYAN = "#7dcfff"
 GREEN = "#9ece6a"
@@ -30,209 +34,207 @@ MAGENTA = "#bb9af7"
 ORANGE = "#ff9e64"
 RED = "#f7768e"
 YELLOW = "#e0af68"
-TEAL = "#73daca"
-INACTIVE = "#3b4261"
+SEL = "#283457"
 
-W, H = 1000, 662
-CW = 7.5  # approximate advance of the monospace face at 12.5px
-
-ARCH = r"""                  -`
-                 .o+`
-                `ooo/
-               `+oooo:
-              `+oooooo:
-              -+oooooo+:
-            `/:-:++oooo+:
-           `/++++/+++++++:
-          `/++++++++++++++:
-         `/+++ooooooooooooo/`
-        ./ooosssso++osssssso+`
-       .oossssso-````/ossssss+`
-      -osssssso.      :ssssssso.
-     :osssssss/        osssso+++.
-    /ossssssss/        +ssssooo/-
-  `/ossssso+/:-        -:/+osssso+-
- `+sso+:-`                 `.-/+oso:
-`++:.                           `-/+/
-.`                                 `/""".split("\n")
+W, H = 1000, 640
+CW = 7.2  # advance of the monospace face at 12px
 
 
-def window(x, y, w, h, active=False, delay=0):
-    stroke = "url(#active)" if active else INACTIVE
-    return (
-        f'<g class="pop" style="animation-delay:{delay}ms;transform-origin:{x + w / 2}px {y + h / 2}px">'
-        f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="9" fill="{BG}" fill-opacity=".94" stroke="{stroke}" stroke-width="2"/>'
-    )
+def heat(frac: float) -> str:
+    """btop's graph gradient: green, then yellow, then red."""
+    stops = [GREEN, YELLOW, RED]
+    frac = min(max(frac, 0), 1) * 2
+    i = min(int(frac), 1)
+    f = frac - i
+    a, b = stops[i], stops[i + 1]
+    rgb = [round(int(a[k:k + 2], 16) * (1 - f) + int(b[k:k + 2], 16) * f) for k in (1, 3, 5)]
+    return "#" + "".join(f"{c:02x}" for c in rgb)
 
 
-def prompt(x, y, cmd, delay=0):
-    return (
-        f'<text x="{x}" y="{y}" class="t"><tspan fill="{BLUE}">~</tspan>'
-        f'<tspan fill="{MAGENTA}"> ❯ </tspan></text>'
-        f'<g class="type" style="animation-delay:{delay}ms"><text x="{x + CW * 4}" y="{y}" class="t" fill="{FG}">{esc(cmd)}</text></g>'
-    )
-
-
-def desktop(data: dict) -> str:
-    gen = dt.date.fromisoformat(data["generated"])
-    parts = []
-
-    # Top bar
-    ws = "".join(
-        f'<text x="{24 + i * 22}" y="20" class="t" fill="{FG if i == 0 else DIM}">{i + 1}</text>' for i in range(5)
-    )
-    parts.append(
-        f'<rect width="{W}" height="30" fill="{BG_DARK}" fill-opacity=".9"/>{ws}'
-        f'<rect x="21" y="25" width="13" height="2" rx="1" fill="{CYAN}"/>'
-        f'<text x="{W / 2}" y="20" class="t" fill="{FG}" text-anchor="middle">{gen.strftime("%A %d %B").replace(" 0", " ")}</text>'
-        f'<text x="{W - 24}" y="20" class="t" fill="{DIM}" text-anchor="end"><tspan fill="{GREEN}">●</tspan> kvm404 · India</text>'
-    )
-
-    # A: fastfetch
-    ax, ay, aw, ah = 10, 40, 600, 400
-    parts.append(window(ax, ay, aw, ah, active=True, delay=0))
-    parts.append(prompt(ax + 18, ay + 30, "fastfetch", 200))
-    logo = "".join(
-        f'<text x="{ax + 18}" y="{ay + 64 + i * 14}" class="logo" xml:space="preserve">{esc(line)}</text>'
-        for i, line in enumerate(ARCH)
-    )
-    parts.append(f'<g class="out" style="animation-delay:900ms">{logo}')
-    info = [
-        ("", f'<tspan fill="{CYAN}">kvm404</tspan><tspan fill="{FG}">@</tspan><tspan fill="{CYAN}">krvaibhav.dev</tspan>'),
-        ("", f'<tspan fill="{DIM}">{"-" * 20}</tspan>'),
-        ("Name", "Kumar Vaibhav"),
-        ("Role", "Fullstack developer"),
-        ("Study", "BS Data Science, IIT Madras"),
-        ("Builds", "Web, Android, Linux, games"),
-        ("OS", "Arch Linux x86_64"),
-        ("WM", "Hyprland (Omarchy)"),
-        ("Langs", ", ".join([l["name"] for l in top_languages(data, 8) if l["name"] not in ("Other", "JavaScript")][:4])),
-        ("AI", "Claude Code, Codex"),
-        ("Uptime", f"{gen.year - data['joined']} years on GitHub"),
-        ("Status", "Open to work"),
+def box(x, y, w, h, num_, title, right="", color=DIM, delay=0):
+    """A rounded btop panel with its title cut into the top border."""
+    tw = (len(title) + 1) * CW + 14
+    parts = [
+        f'<g class="in" style="animation-delay:{delay}ms">',
+        f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="7" fill="none" stroke="{color}" stroke-width="1.2"/>',
+        f'<rect x="{x + 14}" y="{y - 8}" width="{tw}" height="16" fill="{BG}"/>',
+        f'<text x="{x + 20}" y="{y + 4}"><tspan fill="{ORANGE}" font-size="9" dy="-3">{num_}</tspan>'
+        f'<tspan dy="3" fill="{FG}" font-weight="700">{esc(title)}</tspan></text>',
     ]
-    ix = ax + 276
-    for i, (label, value) in enumerate(info):
-        y = ay + 64 + i * 19
-        if label:
-            parts.append(
-                f'<text x="{ix}" y="{y}" class="t"><tspan fill="{BLUE}">{esc(label)}</tspan></text>'
-                f'<text x="{ix + CW * 10}" y="{y}" class="t" fill="{FG}">{esc(value)}</text>'
-            )
-        else:
-            parts.append(f'<text x="{ix}" y="{y}" class="t">{value}</text>')
-    py = ay + 64 + len(info) * 19
-    swatches = [BG_DARK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, FG]
-    bright = [DIM, "#ff7a93", "#b9f27c", "#ff9e64", "#7da6ff", "#c0a8f9", "#0db9d7", "#e6ebff"]
-    for row, cols in enumerate((swatches, bright)):
-        for i, c in enumerate(cols):
-            parts.append(f'<rect x="{ix + i * 22}" y="{py + row * 16}" width="22" height="16" fill="{c}"/>')
+    if right:
+        rw = len(right) * CW + 14
+        parts.append(f'<rect x="{x + w - 14 - rw}" y="{y - 8}" width="{rw}" height="16" fill="{BG}"/>'
+                     f'<text x="{x + w - 21}" y="{y + 4}" text-anchor="end" fill="{DIM}">{esc(right)}</text>')
     parts.append("</g>")
-    parts.append(prompt(ax + 18, ay + ah - 22, "", 0))
-    parts.append(f'<rect class="cursor" x="{ax + 18 + CW * 4}" y="{ay + ah - 34}" width="8" height="15" fill="{FG}"/>')
-    parts.append("</g>")
+    return "".join(parts)
 
-    # B: languages
-    bx, by, bw, bh = 620, 40, 370, 195
-    parts.append(window(bx, by, bw, bh, delay=150))
-    parts.append(prompt(bx + 18, by + 30, "tokei ~/projects --sort bytes", 500))
-    langs = top_languages(data, 6)[:6]
-    colors = [BLUE, YELLOW, ORANGE, MAGENTA, CYAN, GREEN, DIM]
-    rows = []
-    for i, lang in enumerate(langs):
-        y = by + 60 + i * 21
-        track_x, track_w = bx + 18 + CW * 12, bw - 36 - CW * 12 - CW * 7
-        fill_w = max(4, track_w * lang["percent"] / 100)
-        rows.append(
-            f'<text x="{bx + 18}" y="{y}" class="t" fill="{FG}">{esc(lang["name"])}</text>'
-            f'<rect x="{track_x}" y="{y - 10}" width="{track_w:.1f}" height="11" rx="2" fill="{INACTIVE}" fill-opacity=".55"/>'
-            f'<rect class="grow" style="animation-delay:{1300 + i * 90}ms;transform-origin:{track_x}px 0" x="{track_x}" y="{y - 10}" width="{fill_w:.1f}" height="11" rx="2" fill="{colors[i]}"/>'
-            f'<text x="{bx + bw - 18}" y="{y}" class="t" fill="{DIM}" text-anchor="end">{lang["percent"]:.1f}%</text>'
+
+def dots(x, base, step, value, size, color_for):
+    """A column of square dots, like btop's braille graph."""
+    return "".join(
+        f'<rect x="{x:.1f}" y="{base - (k + 1) * step:.1f}" width="{size}" height="{size}" fill="{color_for(k)}"/>'
+        for k in range(value)
+    )
+
+
+def meter(x, y, cells, frac, color_for):
+    """btop's block meter: lit cells in colour, the rest dim."""
+    lit = round(cells * frac)
+    return "".join(
+        f'<rect x="{x + k * 6:.1f}" y="{y - 9}" width="4.5" height="10" rx="1" fill="{color_for(k / cells) if k < lit else LINE}"/>'
+        for k in range(cells)
+    )
+
+
+def render(data: dict) -> str:
+    m = metrics(data)
+    today = dt.date.fromisoformat(data["generated"])
+    body = []
+
+    # cpu: daily contributions over the last 26 weeks
+    cx, cy, cw, ch = 10, 12, 980, 270
+    body.append(box(cx, cy, cw, ch, "¹", "contributions", f"{today.strftime('%a %-d %b %Y')}", BLUE))
+    days = data["calendar"][-182:]
+    gl, gr, gt, gb = cx + 16, 700, cy + 34, cy + ch - 34
+    step = (gr - gl) / len(days)
+    size = round(step - 1.2, 1)
+    rows = int((gb - gt) / step)
+    counts = sorted(d["count"] for d in days if d["count"])
+    cap = counts[int(len(counts) * .97)] if counts else 1
+    cols = []
+    for i, d in enumerate(days):
+        v = 0 if not d["count"] else max(1, round(rows * min(d["count"], cap) / cap))
+        x = gl + i * step
+        cols.append(f'<g class="up" style="animation-delay:{i * 6}ms"><title>{d["date"]}: {d["count"]}</title>'
+                    + dots(x, gb, step, v, size, lambda k: heat(k / rows)) + "</g>")
+    body.append("".join(cols))
+    # month ticks under the graph
+    for i, d in enumerate(days):
+        date = dt.date.fromisoformat(d["date"])
+        if date.day == 1:
+            body.append(f'<text x="{gl + i * step:.1f}" y="{gb + 18}" fill="{DIM}">{date.strftime("%b").lower()}</text>')
+    body.append(f'<text x="{gl}" y="{gt - 6}" fill="{DIM}">daily · top of scale <tspan fill="{FG}">{cap}+</tspan></text>')
+
+    # core list: weekdays
+    kx, ky, kw, kh = 716, cy + 22, 262, ch - 34
+    body.append(f'<rect x="{kx}" y="{ky}" width="{kw}" height="{kh}" rx="6" fill="none" stroke="{LINE}"/>')
+    body.append(f'<text x="{kx + 14}" y="{ky + 24}" fill="{FG}" font-weight="700">{LOGIN}</text>'
+                f'<text x="{kx + kw - 14}" y="{ky + 24}" text-anchor="end" fill="{DIM}">up {today.year - data["joined"]}y</text>')
+    wk = m["weekday_contrib"]
+    total = sum(wk) or 1
+    peak = max(wk) or 1
+    for i, c in enumerate(wk):
+        y = ky + 52 + i * 20
+        hot = i == m["peak_weekday"]
+        body.append(
+            f'<text x="{kx + 14}" y="{y}" fill="{CYAN if hot else FG}">{WEEKDAYS[i]}</text>'
+            + meter(kx + 52, y, 22, c / peak, heat)
+            + f'<text x="{kx + kw - 14}" y="{y}" text-anchor="end" fill="{FG}">{100 * c / total:4.1f}%</text>'
         )
-    parts.append(f'<g class="out" style="animation-delay:1300ms">{"".join(rows)}</g></g>')
+    l7, l30, l365 = m["load"]
+    body.append(f'<text x="{kx + 14}" y="{ky + kh - 16}" fill="{DIM}">Load AVG: <tspan fill="{FG}">{l7:.2f} {l30:.2f} {l365:.2f}</tspan></text>')
 
-    # C: numbers
-    cx, cy, cw, ch = 620, 245, 370, 195
-    parts.append(window(cx, cy, cw, ch, delay=300))
-    parts.append(prompt(cx + 18, cy + 30, "gh stats kvm404", 800))
-    stats = [
-        ("contributions", num(data["contributions_all_time"]), GREEN),
-        ("this year", num(data["this_year"]["total"]), TEAL),
-        ("merged PRs", num(data["prs_merged"]), MAGENTA),
-        ("repositories", num(data["repos"]), BLUE),
-        ("best streak", f"{data['streak_longest']} days", ORANGE),
-        ("busiest day", f"{data['busiest_day']['count']} in a day", YELLOW),
-    ]
-    srows = "".join(
-        f'<text x="{cx + 18}" y="{cy + 60 + i * 21}" class="t" fill="{DIM}">{esc(k)}</text>'
-        f'<text x="{cx + 18 + CW * 15}" y="{cy + 60 + i * 21}" class="t b" fill="{c}">{esc(v)}</text>'
-        for i, (k, v, c) in enumerate(stats)
+    # mem: languages
+    mx, my, mw, mh = 10, 296, 486, 170
+    body.append(box(mx, my, mw, mh, "²", "languages", f"{len(data['languages'])} total", MAGENTA, 100))
+    langs = top_languages(data, 5)
+    for i, lang in enumerate(langs):
+        y = my + 32 + i * 22
+        body.append(
+            f'<text x="{mx + 16}" y="{y}" fill="{FG}">{esc(lang["name"])}</text>'
+            + meter(mx + 128, y, 46, lang["percent"] / 100, lambda f, c=lang["color"]: c)
+            + f'<text x="{mx + mw - 16}" y="{y}" text-anchor="end" fill="{FG}">{lang["percent"]:5.1f}%</text>'
+        )
+
+    # net: lines added (up) and removed (down) per month
+    nx, ny, nw, nh = 10, 480, 486, 150
+    body.append(box(nx, ny, nw, nh, "³", "lines", "12 months", GREEN, 200))
+    months: dict[str, list[int]] = {}
+    for c in data["commit_log"]:
+        months.setdefault(c["local"][:7], [0, 0])
+        months[c["local"][:7]][0] += c["add"]
+        months[c["local"][:7]][1] += c["del"]
+    keys = []
+    d = today.replace(day=1)
+    for _ in range(12):
+        keys.append(d.strftime("%Y-%m"))
+        d = (d - dt.timedelta(days=1)).replace(day=1)
+    keys.reverse()
+    mid = ny + nh / 2 - 4
+    biggest = max(max(months.get(k, [0, 0])) for k in keys) or 1
+    nstep = 5.2
+    nrows = 9
+    for i, k in enumerate(keys):
+        add, rem = months.get(k, [0, 0])
+        bx = nx + 16 + i * 26
+        for j in range(3):
+            x = bx + j * nstep
+            up = round(nrows * (add / biggest) ** .5) if add else 0
+            dn = round(nrows * (rem / biggest) ** .5) if rem else 0
+            body.append(dots(x, mid - 2, nstep, up, 4, lambda q: GREEN if q < 5 else YELLOW))
+            body.append("".join(f'<rect x="{x:.1f}" y="{mid + 2 + q * nstep:.1f}" width="4" height="4" fill="{RED}" fill-opacity="{1 - q * .07:.2f}"/>' for q in range(dn)))
+        body.append(f'<text x="{bx + 6.5:.1f}" y="{ny + nh - 12}" text-anchor="middle" fill="{DIM}" font-size="10">'
+                    f'{dt.date.fromisoformat(k + "-01").strftime("%b")[0].lower()}</text>')
+    body.append(f'<line x1="{nx + 14}" x2="{nx + 324}" y1="{mid}" y2="{mid}" stroke="{LINE}" stroke-dasharray="2 3"/>')
+    sx = nx + 344
+    body.append(
+        f'<text x="{sx}" y="{ny + 36}" fill="{DIM}">▲ added</text>'
+        f'<text x="{sx}" y="{ny + 56}" fill="{GREEN}" font-size="16" font-weight="700">+{compact(data["additions"])}</text>'
+        f'<text x="{sx}" y="{ny + 90}" fill="{DIM}">▼ removed</text>'
+        f'<text x="{sx}" y="{ny + 110}" fill="{RED}" font-size="16" font-weight="700">−{compact(data["deletions"])}</text>'
+        f'<text x="{sx}" y="{ny + 134}" fill="{DIM}">{num(data["commits_total"])} commits</text>'
     )
-    parts.append(f'<g class="out" style="animation-delay:1600ms">{srows}</g></g>')
 
-    # D: heatmap
-    dx, dy, dw, dh = 10, 450, 980, 202
-    parts.append(window(dx, dy, dw, dh, delay=450))
-    parts.append(prompt(dx + 18, dy + 30, "git activity --last 365d", 1100))
-    palette = ["#24283b", "#2f4a3a", "#4d7a45", "#7bae57", GREEN]
-    n_weeks = len(calendar_weeks(data))
-    cell = round((dw - 60 - 18 - 3 * (n_weeks - 1)) / n_weeks, 2)
-    hm, hw, hh = heatmap(data, dx + 60, dy + 48, cell, 3, palette, radius=2.5)
-    for i, label in ((1, "Mon"), (3, "Wed"), (5, "Fri")):
-        parts.append(f'<text x="{dx + 18}" y="{dy + 48 + i * (cell + 3) + cell - 2:.1f}" class="t s" fill="{DIM}">{label}</text>')
-    more_x = dx + dw - 18 - CW * 4
-    legend_x = more_x - 8 - 5 * 16
-    legend = "".join(f'<rect x="{legend_x + i * 16}" y="{dy + dh - 25}" width="12" height="12" rx="2" fill="{c}"/>' for i, c in enumerate(palette))
-    parts.append(
-        f'<g class="out" style="animation-delay:1900ms">{hm}'
-        f'<text x="{dx + 60}" y="{dy + dh - 15}" class="t s" fill="{DIM}">{num(data["contributions_last_year"])} contributions in the last year</text>'
-        f'<text x="{legend_x - 8}" y="{dy + dh - 15}" class="t s" fill="{DIM}" text-anchor="end">less</text>{legend}'
-        f'<text x="{more_x}" y="{dy + dh - 15}" class="t s" fill="{DIM}">more</text></g></g>'
+    # proc: repos with the most commits
+    px, py, pw, ph = 504, 296, 486, 334
+    body.append(box(px, py, pw, ph, "⁴", "repos", "commits · last 12 months", RED, 300))
+    hy = py + 30
+    body.append(
+        f'<text x="{px + 16}" y="{hy}" fill="{FG}" font-weight="700">Pid</text>'
+        f'<text x="{px + 60}" y="{hy}" fill="{FG}" font-weight="700">Program:</text>'
+        f'<text x="{px + 270}" y="{hy}" fill="{FG}" font-weight="700">Lang</text>'
+        f'<text x="{px + pw - 16}" y="{hy}" text-anchor="end" fill="{FG}" font-weight="700">Commits</text>'
+    )
+    repos = data["top_repos"][:10]
+    rpeak = max(r["commits"] for r in repos) or 1
+    for i, r in enumerate(repos):
+        y = hy + 24 + i * 22
+        if i == 0:
+            body.append(f'<rect x="{px + 6}" y="{y - 15}" width="{pw - 12}" height="21" rx="3" fill="{SEL}"/>')
+        name = r["name"] if len(r["name"]) <= 24 else r["name"][:23] + "…"
+        lang = (r["language"] or "—")[:10]
+        body.append(
+            f'<text x="{px + 16}" y="{y}" fill="{DIM}">{i + 1:>2}</text>'
+            f'<text x="{px + 60}" y="{y}" fill="{FG if r["owned"] else CYAN}">{esc(name)}</text>'
+            f'<text x="{px + 270}" y="{y}" fill="{r["color"]}">{esc(lang)}</text>'
+            f'<rect x="{px + 360}" y="{y - 8}" width="{70 * r["commits"] / rpeak:.1f}" height="7" rx="1" fill="{heat(r["commits"] / rpeak)}"/>'
+            f'<text x="{px + pw - 16}" y="{y}" text-anchor="end" fill="{FG}">{r["commits"]}</text>'
+        )
+    fy = py + ph - 16
+    body.append(
+        f'<text x="{px + 16}" y="{fy}" fill="{DIM}"><tspan fill="{CYAN}">cyan</tspan> = contributed to, not mine · '
+        f'peak hour <tspan fill="{FG}">{hour_label(m["peak_hour"])}</tspan></text>'
     )
 
     return f"""
-<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="A Hyprland desktop: fastfetch for kvm404, language split, {num(data['contributions_all_time'])} contributions, {data['prs_merged']} merged pull requests and a contribution heatmap.">
-  <defs>
-    <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1f2335"/><stop offset=".55" stop-color="#16161e"/><stop offset="1" stop-color="#232a4d"/>
-    </linearGradient>
-    <radialGradient id="glow" cx=".78" cy=".18" r=".6">
-      <stop offset="0" stop-color="{MAGENTA}" stop-opacity=".22"/><stop offset="1" stop-color="{MAGENTA}" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="active" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#33ccff"/><stop offset="1" stop-color="#00ff99"/>
-    </linearGradient>
-    <linearGradient id="arch" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="{CYAN}"/><stop offset="1" stop-color="{BLUE}"/>
-    </linearGradient>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="A btop-style monitor of GitHub activity for {LOGIN}: daily contributions for the last six months, share by weekday, languages, lines added and removed per month, and the repos with the most commits.">
   <style>
-    .t {{ font-family: {MONO}; font-size: 12.5px; }}
-    .s {{ font-size: 11px; }}
-    .b {{ font-weight: 700; }}
-    .logo {{ font-family: {MONO}; font-size: 11px; fill: url(#arch); white-space: pre; }}
-    .pop {{ animation: pop 500ms cubic-bezier(.34,1.56,.64,1) both; }}
-    .type {{ animation: type 600ms steps(12) both; }}
-    .out {{ animation: show 1ms both; }}
-    .cursor {{ animation: blink 1.1s steps(1) infinite; }}
-    .grow {{ animation: grow 700ms cubic-bezier(.16,1,.3,1) both; }}
-    @keyframes grow {{ from {{ transform: scaleX(0); }} }}
-    @keyframes pop {{ from {{ opacity: 0; transform: scale(.94); }} }}
-    @keyframes type {{ from {{ clip-path: inset(0 100% 0 0); }} }}
-    @keyframes show {{ from {{ opacity: 0; }} }}
-    @keyframes blink {{ 50% {{ opacity: 0; }} }}
-    @media (prefers-reduced-motion: reduce) {{ .pop, .type, .out, .cursor, .grow {{ animation: none; }} }}
+    text {{ font-family: {MONO}; font-size: 12px; }}
+    .in {{ animation: in 600ms ease both; }}
+    .up {{ animation: up 700ms cubic-bezier(.16,1,.3,1) both; transform-box: fill-box; transform-origin: 50% 100%; }}
+    @keyframes in {{ from {{ opacity: 0; }} }}
+    @keyframes up {{ from {{ transform: scaleY(0); }} }}
+    @media (prefers-reduced-motion: reduce) {{ .in, .up {{ animation: none; }} }}
   </style>
-  <rect width="{W}" height="{H}" rx="12" fill="url(#wall)"/>
-  <rect width="{W}" height="{H}" rx="12" fill="url(#glow)"/>
-  <g clip-path="inset(0 round 12px)">{''.join(parts)}</g>
+  <rect width="{W}" height="{H}" rx="12" fill="{BG}"/>
+  {''.join(body)}
 </svg>"""
 
 
 def main() -> None:
     data = load(LOGIN)
     os.makedirs(OUT, exist_ok=True)
-    write(os.path.join(OUT, "desktop.svg"), desktop(data))
+    write(os.path.join(OUT, "btop.svg"), render(data))
     print("rendered", data["generated"])
 
 
