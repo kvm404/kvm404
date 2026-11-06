@@ -142,6 +142,7 @@ def metrics(data: dict) -> dict:
         "active_days": active,
         "per_active_day": sum(last_year) / max(1, active),
         "load": (avg(7), avg(30), avg(365)),
+        "trend": (sum(daily[-30:]) - sum(daily[-60:-30])) / max(1, sum(daily[-60:-30])),
         "best_month": best_month,
         "months": months,
     }

@@ -11,7 +11,7 @@ I build things I want to use myself, then keep polishing until other people can 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/rhythm-dark.svg">
-  <img src="assets/rhythm-light.svg" width="100%" alt="When I work: commits by hour of day and day of week, lines added and removed, the repos with the most commits this year, contributions per year, and a load average of contributions per day.">
+  <img src="assets/rhythm-light.svg" width="100%" alt="When I work: commits per week stacked by repo with releases marked, commits by hour of day and day of week, lines added and removed, the repos with the most commits this year, contributions per year, and a load average of contributions per day with the 30-day trend.">
 </picture>
 
 <br>
@@ -42,5 +42,7 @@ I build things I want to use myself, then keep polishing until other people can 
 ### Say hi
 
 [Portfolio](https://krvaibhav.dev) · [LinkedIn](https://www.linkedin.com/in/krvaibhav-kvm) · [X](https://x.com/krvaibhavm) · [Email](mailto:krvaibhav9999@gmail.com)
+
+![Profile views](https://komarev.com/ghpvc/?username=kvm404&label=profile%20views&color=059669&style=flat-square)
 
 <sub>Both grids are SVGs that a workflow in this repo rebuilds every night from the GitHub API. Commit times are in IST.</sub>

@@ -73,6 +73,9 @@ query($login: String!, $after: String) {
         stargazerCount
         createdAt
         primaryLanguage { name color }
+        releases(first: 20, orderBy: {field: CREATED_AT, direction: DESC}) {
+          nodes { tagName createdAt isDraft isPrerelease }
+        }
         languages(first: 12, orderBy: {field: SIZE, direction: DESC}) {
           edges { size node { name color } }
         }
@@ -287,7 +290,25 @@ def fetch(login: str, token: str) -> dict:
         "additions": sum(c["additions"] for c in commits),
         "deletions": sum(c["deletions"] for c in commits),
         "punchcard": punch,
-        "commit_log": [{"local": c["local"][:16], "add": c["additions"], "del": c["deletions"]} for c in commits],
+        "commit_log": [
+            {
+                "local": c["local"][:16],
+                "add": c["additions"],
+                "del": c["deletions"],
+                # Private repo names stay private on a public profile.
+                "repo": None if c["private"] else c["repo"],
+            }
+            for c in commits
+        ],
+        "releases": sorted(
+            (
+                {"repo": None if r["isPrivate"] else r["name"], "tag": rel["tagName"], "date": rel["createdAt"][:10]}
+                for r in repos
+                for rel in r["releases"]["nodes"]
+                if not rel["isDraft"]
+            ),
+            key=lambda x: x["date"],
+        ),
         "repo_years": sorted(int(r["createdAt"][:4]) for r in repos),
         "tz_minutes": TZ_MINUTES,
     }

@@ -25,11 +25,13 @@ THEMES = {
     "light": {
         "tile": "#ffffff", "border": "#e4e7eb", "text": "#0f172a", "muted": "#64748b", "faint": "#f1f5f9",
         "accent": "#059669", "accent_soft": "#c7f0de", "minus": "#f43f5e",
+        "series": ["#059669", "#2563eb", "#d97706", "#db2777", "#7c3aed"], "other": "#cbd5e1",
         "heat": ["#eef2f6", "#a7f3d0", "#4ade80", "#10b981", "#047857"],
     },
     "dark": {
         "tile": "#11161d", "border": "#262c36", "text": "#f1f5f9", "muted": "#8b96a5", "faint": "#1b222c",
         "accent": "#34d399", "accent_soft": "#134235", "minus": "#fb7185",
+        "series": ["#0ea371", "#3b82f6", "#c98500", "#e1508a", "#8b5cf6"], "other": "#3a4250",
         "heat": ["#1b222c", "#064e3b", "#047857", "#10b981", "#6ee7b7"],
     },
 }
@@ -148,6 +150,13 @@ def bento(data: dict, t: dict, photo: str) -> str:
     cell = round((W - 44 - gap * (len(weeks) - 1)) / len(weeks), 2)
     hm, _, hm_h = heatmap(data, 22, r3 + 52, cell, gap, t["heat"], radius=3)
     busiest = dt.date.fromisoformat(data["busiest_day"]["date"]).strftime("%-d %b")
+    for wi, week in enumerate(weeks):
+        for di, day in enumerate(week):
+            if day["date"] == data["busiest_day"]["date"]:
+                dow = (dt.date.fromisoformat(week[0]["date"]).weekday() + 1) % 7 + di
+                bx, by = 22 + wi * (cell + gap), r3 + 52 + dow * (cell + gap)
+                hm += (f'<rect x="{bx - 2.5:.1f}" y="{by - 2.5:.1f}" width="{cell + 5:.1f}" height="{cell + 5:.1f}" rx="5" '
+                       f'fill="none" stroke="{t["text"]}" stroke-width="1.6"/>')
     h3 = 52 + hm_h + 24
     tiles.append(tile(0, r3, W, h3, t, 6, f"""
       <text class="label" x="{W - 22}" y="{r3 + 32}" text-anchor="end">{num(data['contributions_last_year'])} IN THE LAST YEAR · BUSIEST DAY {busiest.upper()}, {data['busiest_day']['count']}</text>
@@ -195,6 +204,121 @@ def frame(w: float, h: float, t: dict, body: str, label: str) -> str:
 </svg>"""
 
 
+def week_by_week(data: dict, t: dict, y0: float) -> tuple[str, float]:
+    """Commits per week, stacked by repo, with releases marked under the axis."""
+    weeks = calendar_weeks(data)
+    index = {d["date"]: i for i, wk in enumerate(weeks) for d in wk}
+    per_week: list[dict] = [{} for _ in weeks]
+    totals: dict = {}
+    for c in data["commit_log"]:
+        i = index.get(c["local"][:10])
+        if i is None:
+            continue
+        key = c["repo"] or "private"
+        per_week[i][key] = per_week[i].get(key, 0) + 1
+        totals[key] = totals.get(key, 0) + 1
+
+    # Up to five named series by size, in the fixed palette order; the rest fold into "other".
+    ranked = sorted(totals, key=lambda k: -totals[k])
+    named = [k for k in ranked if totals[k] >= 15][:5]
+    series = named + (["other"] if len(ranked) > len(named) else [])
+    color = {k: t["series"][i] for i, k in enumerate(named)}
+    color["other"] = t["other"]
+    def bucket(k):
+        return k if k in named else "other"
+    stacks = []
+    for wk in per_week:
+        agg: dict = {}
+        for k, v in wk.items():
+            agg[bucket(k)] = agg.get(bucket(k), 0) + v
+        stacks.append(agg)
+    count = {k: sum(st.get(k, 0) for st in stacks) for k in series}
+    names = {"private": "private repos", "other": "other"}
+
+    h = 318
+    left, right = 58, W - 22
+    top, base = y0 + 132, y0 + 252
+    slot = (right - left) / len(weeks)
+    bw = slot - 4
+    peak = max((sum(st.values()) for st in stacks), default=1) or 1
+    step = next(s for s in (5, 10, 20, 25, 50, 100, 200, 250, 500) if peak / s <= 3)
+    scale = (base - top) / max(peak, step)
+    parts = []
+
+    # legend
+    lx = 22
+    for k in series:
+        label = names.get(k, k)
+        parts.append(
+            f'<rect x="{lx}" y="{y0 + 54}" width="10" height="10" rx="2.5" fill="{color[k]}"/>'
+            f'<text class="small" x="{lx + 16}" y="{y0 + 63}" style="fill:{t["text"]}">{esc(label)}'
+            f'<tspan class="tick" dx="6">{count[k]}</tspan></text>'
+        )
+        lx += 16 + len(label) * 7 + 6 + len(str(count[k])) * 6.4 + 26
+
+    # grid
+    v = step
+    while v * scale <= base - top + 1:
+        y = base - v * scale
+        parts.append(f'<line x1="{left}" x2="{right}" y1="{y:.1f}" y2="{y:.1f}" stroke="{t["border"]}" stroke-dasharray="2 4"/>'
+                     f'<text class="tick" x="{left - 10}" y="{y + 4:.1f}" text-anchor="end">{v}</text>')
+        v += step
+    parts.append(f'<line x1="{left}" x2="{right}" y1="{base}" y2="{base}" stroke="{t["border"]}"/>')
+
+    # bars
+    bars = []
+    for i, st in enumerate(stacks):
+        x = left + i * slot + 2
+        y = base
+        tip = ", ".join(f"{names.get(k, k)} {st[k]}" for k in series if st.get(k))
+        for k in series:
+            n = st.get(k, 0)
+            if not n:
+                continue
+            seg = n * scale
+            gap = 1.5 if y < base else 0
+            bars.append(f'<rect x="{x:.1f}" y="{y - seg + gap:.1f}" width="{bw:.1f}" height="{max(seg - gap, 1):.1f}" rx="2.5" fill="{color[k]}"/>')
+            y -= seg
+        if tip:
+            bars.append(f'<rect x="{x - 2:.1f}" y="{top - 10}" width="{slot:.1f}" height="{base - top + 10}" fill="transparent">'
+                        f'<title>Week of {dt.date.fromisoformat(weeks[i][0]["date"]).strftime("%-d %b")}: {tip}</title></rect>')
+    parts.append(f'<g class="rise" style="transform-origin:0 {base}px">{"".join(bars)}</g>')
+
+    # month labels
+    for i, wk in enumerate(weeks):
+        d = dt.date.fromisoformat(wk[0]["date"])
+        if d.day <= 7 and i:
+            parts.append(f'<text class="tick" x="{left + i * slot:.1f}" y="{base + 38}">{d.strftime("%b")}</text>')
+
+    # releases: a tick per release under the axis, and a label on each repo's first one
+    seen: dict = {}
+    first_labels = []
+    for r in data["releases"]:
+        i = index.get(r["date"])
+        if i is None:
+            continue
+        k = bucket(r["repo"] or "private")
+        n = seen.get(i, 0)
+        seen[i] = n + 1
+        cx = left + i * slot + slot / 2
+        parts.append(f'<rect x="{cx - 7.5 + (n % 4) * 4:.1f}" y="{base + 6 + (n // 4) * 5}" width="3" height="3.5" rx="1" fill="{color.get(k, t["other"])}">'
+                     f'<title>{esc((r["repo"] or "private repo") + " " + r["tag"])}, {r["date"]}</title></rect>')
+        if r["repo"] and r["repo"] not in {f[0] for f in first_labels}:
+            first_labels.append((r["repo"], r["tag"], cx))
+    # The rightmost release gets the top row, so no label crosses another's leader line.
+    for lvl, (repo, tag, cx) in enumerate(sorted(first_labels[:4], key=lambda f: -f[2])):
+        ly = y0 + 92 + lvl * 13
+        parts.append(f'<line x1="{cx:.1f}" x2="{cx:.1f}" y1="{ly + 4}" y2="{base}" stroke="{t["muted"]}" stroke-opacity=".6" stroke-dasharray="1.5 2.5"/>'
+                     f'<circle cx="{cx:.1f}" cy="{ly}" r="2.5" fill="{color.get(bucket(repo), t["other"])}"/>'
+                     f'<text class="tick" x="{cx - 7:.1f}" y="{ly + 4}" text-anchor="end" style="fill:{t["text"]}">{esc(repo)} {esc(tag)}</text>')
+
+    nrel = sum(1 for r in data["releases"] if r["date"] in index)
+    svg = tile(0, y0, W, h, t, 0,
+               f'<text class="label" x="{W - 22}" y="{y0 + 32}" text-anchor="end">COMMITS PER WEEK · {nrel} RELEASES MARKED UNDER THE AXIS</text>'
+               + "".join(parts), "The year, week by week")
+    return svg, h
+
+
 def rhythm(data: dict, t: dict) -> str:
     """Second grid: when and how the work happens."""
     m = metrics(data)
@@ -202,8 +326,11 @@ def rhythm(data: dict, t: dict) -> str:
     half = col * 2 + GAP
     tiles = []
 
+    weekly, hw = week_by_week(data, t, 0)
+    tiles.append(weekly)
+
     # Hour-of-day clock, with the day split into four parts beside it.
-    ra, ha = 0, 224
+    ra, ha = hw + GAP, 224
     hours = m["hours"]
     peak = max(hours) or 1
     ccx, ccy, inner, outer = half - 118, ra + 116, 30, 76
@@ -279,7 +406,7 @@ def rhythm(data: dict, t: dict) -> str:
 
     # Punch card: weekday by hour
     rb = ra + ha + GAP
-    left, top, cw, rh = 74, rb + 64, (W - 74 - 26) / 24, 22
+    left, top, cw, rh = 74, rb + 118, (W - 74 - 150) / 24, 22
     punch = data["punchcard"]
     ppeak = max(max(r) for r in punch) or 1
     dots = []
@@ -299,7 +426,29 @@ def rhythm(data: dict, t: dict) -> str:
                 dots.append(f'<circle cx="{x:.1f}" cy="{y}" r="1.6" fill="{t["border"]}"/>')
     for h in range(0, 24, 3):
         dots.append(f'<text class="tick" x="{left + h * cw + cw / 2:.1f}" y="{top + 7 * rh + 8}" text-anchor="middle">{hour_label(h).replace(" ", "")}</text>')
-    hb = 64 + 7 * rh + 28
+    # Totals in the margins: per hour above the grid, per weekday beside it.
+    hpeak = max(hours) or 1
+    hbase = top - 22
+    for h, c in enumerate(hours):
+        bh = max(2, 34 * c / hpeak)
+        hot = h == m["peak_hour"]
+        dots.append(
+            f'<rect x="{left + h * cw + 4:.1f}" y="{hbase - bh:.1f}" width="{cw - 8:.1f}" height="{bh:.1f}" rx="2.5" '
+            f'fill="{t["accent"] if hot else t["accent_soft"]}"><title>{hour_label(h)}: {c} commits</title></rect>'
+        )
+        if hot:
+            dots.append(f'<text class="tick" x="{left + h * cw + cw / 2:.1f}" y="{hbase - bh - 6:.1f}" text-anchor="middle" style="fill:{t["text"]}">{hour_label(h)}</text>')
+    wc = m["weekday_commits"]
+    wpk = max(wc) or 1
+    mx0 = W - 22 - 112
+    for w, c in enumerate(wc):
+        y = top + w * rh
+        dots.append(
+            f'<rect class="grow" style="transform-origin:{mx0}px 0" x="{mx0}" y="{y - 4}" width="{max(2, 72 * c / wpk):.1f}" height="8" rx="2.5" '
+            f'fill="{t["accent"] if c == wpk else t["accent_soft"]}"><title>{WEEKDAYS_FULL[w]}: {c} commits</title></rect>'
+            f'<text class="num" x="{W - 22}" y="{y + 4}" text-anchor="end">{c}</text>'
+        )
+    hb = 118 + 7 * rh + 28
     tiles.append(tile(0, rb, W, hb, t, 3, f"""
       <text class="label" x="{W - 22}" y="{rb + 32}" text-anchor="end">{num(data['commits_total'])} COMMITS · {m['night_share'] * 100:.0f}% AFTER 10 PM</text>
       {''.join(dots)}""", "Commits by day and hour"))
@@ -346,9 +495,10 @@ def rhythm(data: dict, t: dict) -> str:
     l1, l7, l365 = m["load"]
     tiles.append(tile(ox, rc, col, hc, t, 6, f"""
       <text x="{ox + 22}" y="{rc + 90}" style="font-family:{MONO};font-size:22px;font-weight:700;letter-spacing:-.5px" fill="{t['text']}">{l1:.2f} <tspan fill="{t['muted']}">{l7:.2f} {l365:.2f}</tspan></text>
-      <text class="small" x="{ox + 22}" y="{rc + 124}">contributions a day over</text>
-      <text class="small" x="{ox + 22}" y="{rc + 142}">the last week, month, year</text>
-      <text class="small" x="{ox + 22}" y="{rc + 182}">{m['active_days']} active days this year</text>""", "Load average"))
+      <text class="small" x="{ox + 22}" y="{rc + 118}">contributions a day over</text>
+      <text class="small" x="{ox + 22}" y="{rc + 136}">the last week, month, year</text>
+      <text class="small" x="{ox + 22}" y="{rc + 172}"><tspan class="strong" style="fill:{t['minus'] if m['trend'] < 0 else t['accent']}">{"↓" if m['trend'] < 0 else "↑"} {abs(m['trend']) * 100:.0f}%</tspan> last 30 days vs the 30 before</text>
+      <text class="small" x="{ox + 22}" y="{rc + 192}"><tspan class="strong">{m['active_days'] / 365 * 100:.0f}%</tspan> of the last 365 days active</text>""", "Load average"))
 
     H = rc + hc
     return frame(W, H, t, "".join(tiles),
