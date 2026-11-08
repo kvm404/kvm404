@@ -64,13 +64,10 @@ def bento(data: dict, t: dict, photo: str) -> str:
       <text class="body" x="{px + 144}" y="{py + 92}">Fullstack developer, studying data science</text>
       <text class="body" x="{px + 144}" y="{py + 112}">at IIT Madras. Web, Android, Linux, games.</text>
       <g transform="translate({px + 28} {py + 148})">
-        <rect width="118" height="28" rx="14" fill="{t['accent_soft']}"/>
-        <circle class="pulse" cx="18" cy="14" r="4" fill="{t['accent']}"/>
-        <text class="chip" x="30" y="18.5" fill="{t['accent']}">Open to work</text>
-        <rect x="128" width="122" height="28" rx="14" fill="{t['faint']}"/>
-        <text class="chip" x="189" y="18.5" text-anchor="middle">krvaibhav.dev</text>
-        <rect x="260" width="78" height="28" rx="14" fill="{t['faint']}"/>
-        <text class="chip" x="299" y="18.5" text-anchor="middle">India</text>
+        <rect width="122" height="28" rx="14" fill="{t['faint']}"/>
+        <text class="chip" x="61" y="18.5" text-anchor="middle">krvaibhav.dev</text>
+        <rect x="132" width="78" height="28" rx="14" fill="{t['faint']}"/>
+        <text class="chip" x="171" y="18.5" text-anchor="middle">India</text>
       </g>"""))
 
     # Contributions with a monthly sparkline

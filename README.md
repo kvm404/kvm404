@@ -5,10 +5,6 @@
 
 <br>
 
-I build things I want to use myself, then keep polishing until other people can use them too. Right now that's [PhoneCam](https://github.com/kvm404/phonecam), which turns an Android phone into a webcam for Linux, and [RailReel](https://github.com/kvm404/railreel), for watching a movie in sync with friends on a train with no internet. More on [krvaibhav.dev](https://krvaibhav.dev).
-
-<br>
-
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/rhythm-dark.svg">
   <img src="assets/rhythm-light.svg" width="100%" alt="When I work: commits per week stacked by repo with releases marked, commits by hour of day and day of week, lines added and removed, the repos with the most commits this year, contributions per year, and a load average of contributions per day with the 30-day trend.">
