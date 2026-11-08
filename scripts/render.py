@@ -15,8 +15,8 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from github_data import load  # noqa: E402
-from svg import (MONO, SANS, WEEKDAYS, WEEKDAYS_FULL, active_years, calendar_weeks, compact, esc, heatmap,  # noqa: E402
-                 hour_label, metrics, monthly_totals, num, top_languages, write)
+from svg import (MONO, SANS, WEEKDAYS, WEEKDAYS_FULL, active_years, calendar_weeks, compact, esc,  # noqa: E402
+                 metrics, monthly_totals, num, top_languages, write)
 
 LOGIN = "kvm404"
 OUT = os.path.join(os.path.dirname(__file__), "..", "assets")
@@ -26,13 +26,11 @@ THEMES = {
         "tile": "#ffffff", "border": "#e4e7eb", "text": "#0f172a", "muted": "#64748b", "faint": "#f1f5f9",
         "accent": "#059669", "accent_soft": "#c7f0de", "minus": "#f43f5e",
         "series": ["#059669", "#2563eb", "#d97706", "#db2777", "#7c3aed"], "other": "#cbd5e1",
-        "heat": ["#eef2f6", "#a7f3d0", "#4ade80", "#10b981", "#047857"],
     },
     "dark": {
         "tile": "#11161d", "border": "#262c36", "text": "#f1f5f9", "muted": "#8b96a5", "faint": "#1b222c",
         "accent": "#34d399", "accent_soft": "#134235", "minus": "#fb7185",
         "series": ["#0ea371", "#3b82f6", "#c98500", "#e1508a", "#8b5cf6"], "other": "#3a4250",
-        "heat": ["#1b222c", "#064e3b", "#047857", "#10b981", "#6ee7b7"],
     },
 }
 
@@ -51,7 +49,7 @@ def tile(x, y, w, h, t, i, body, label=None):
 def bento(data: dict, t: dict, photo: str) -> str:
     col = (W - 3 * GAP) / 4  # quarter width
     half = col * 2 + GAP
-    r1, r2, r3 = 0, 200 + GAP, 2 * (200 + GAP)
+    r1, r2 = 0, 200 + GAP
     tiles = []
 
     # Profile
@@ -141,24 +139,7 @@ def bento(data: dict, t: dict, photo: str) -> str:
         )
     tiles.append(tile(lx, r2, half, 200, t, 5, f'<g class="grow" style="transform-origin:{lx + 22}px 0">{"".join(segs)}</g>{"".join(legend)}', "Languages by bytes"))
 
-    # Heatmap
-    weeks = calendar_weeks(data)
-    gap = 3
-    cell = round((W - 44 - gap * (len(weeks) - 1)) / len(weeks), 2)
-    hm, _, hm_h = heatmap(data, 22, r3 + 52, cell, gap, t["heat"], radius=3)
-    busiest = dt.date.fromisoformat(data["busiest_day"]["date"]).strftime("%-d %b")
-    for wi, week in enumerate(weeks):
-        for di, day in enumerate(week):
-            if day["date"] == data["busiest_day"]["date"]:
-                dow = (dt.date.fromisoformat(week[0]["date"]).weekday() + 1) % 7 + di
-                bx, by = 22 + wi * (cell + gap), r3 + 52 + dow * (cell + gap)
-                hm += (f'<rect x="{bx - 2.5:.1f}" y="{by - 2.5:.1f}" width="{cell + 5:.1f}" height="{cell + 5:.1f}" rx="5" '
-                       f'fill="none" stroke="{t["text"]}" stroke-width="1.6"/>')
-    h3 = 52 + hm_h + 24
-    tiles.append(tile(0, r3, W, h3, t, 6, f"""
-      <text class="label" x="{W - 22}" y="{r3 + 32}" text-anchor="end">{num(data['contributions_last_year'])} IN THE LAST YEAR · BUSIEST DAY {busiest.upper()}, {data['busiest_day']['count']}</text>
-      {hm}""", "Last 12 months"))
-    H = r3 + h3
+    H = r2 + 200
 
     return frame(W, H, t, "".join(tiles),
                  f"Kumar Vaibhav, fullstack developer. {num(data['contributions_all_time'])} contributions, "
