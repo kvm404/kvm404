@@ -7,7 +7,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/rhythm-dark.svg">
-  <img src="assets/rhythm-light.svg" width="100%" alt="When I work: commits per week stacked by repo with releases marked, commits by hour of day and day of week, lines added and removed, the repos with the most commits this year, contributions per year, and a load average of contributions per day with the 30-day trend.">
+  <img src="assets/rhythm-light.svg" width="100%" alt="Commits per week stacked by repo with releases marked, the repos with the most commits this year, contributions per year, and the busiest day of the week.">
 </picture>
 
 <br>

@@ -317,7 +317,7 @@ def week_by_week(data: dict, t: dict, y0: float) -> tuple[str, float]:
 
 
 def rhythm(data: dict, t: dict) -> str:
-    """Second grid: when and how the work happens."""
+    """Second grid: the year week by week, top repos, years, busiest weekday."""
     m = metrics(data)
     col = (W - 3 * GAP) / 4
     half = col * 2 + GAP
@@ -326,132 +326,8 @@ def rhythm(data: dict, t: dict) -> str:
     weekly, hw = week_by_week(data, t, 0)
     tiles.append(weekly)
 
-    # Hour-of-day clock, with the day split into four parts beside it.
-    ra, ha = hw + GAP, 224
-    hours = m["hours"]
-    peak = max(hours) or 1
-    ccx, ccy, inner, outer = half - 118, ra + 116, 30, 76
-    spokes = []
-    for h, c in enumerate(hours):
-        a = math.radians(h * 15 - 90)
-        length = 4 + (outer - inner - 4) * c / peak
-        x1, y1 = ccx + inner * math.cos(a), ccy + inner * math.sin(a)
-        x2, y2 = ccx + (inner + length) * math.cos(a), ccy + (inner + length) * math.sin(a)
-        op = 1 if h == m["peak_hour"] else .3 + .5 * c / peak
-        spokes.append(
-            f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{t["accent"]}" stroke-opacity="{op:.2f}" '
-            f'stroke-width="7" stroke-linecap="round"><title>{hour_label(h)}: {c} commits</title></line>'
-        )
-    ticks = "".join(
-        f'<text class="tick" x="{ccx + (outer + 14) * math.cos(math.radians(h * 15 - 90)):.1f}" '
-        f'y="{ccy + (outer + 14) * math.sin(math.radians(h * 15 - 90)) + 4:.1f}" text-anchor="middle">{lab}</text>'
-        for h, lab in ((0, "12a"), (6, "6a"), (12, "12p"), (18, "6p"))
-    )
-    total = sum(c for _, c in m["dayparts"]) or 1
-    parts = []
-    for i, (name, c) in enumerate(m["dayparts"]):
-        y = ra + 136 + i * 20
-        share = c / total
-        parts.append(
-            f'<text class="small" x="22" y="{y}">{name}</text>'
-            f'<rect x="100" y="{y - 8}" width="110" height="7" rx="3.5" fill="{t["faint"]}"/>'
-            f'<rect class="grow" style="transform-origin:100px 0" x="100" y="{y - 8}" width="{110 * share:.1f}" height="7" rx="3.5" fill="{t["accent"]}"/>'
-            f'<text class="num" x="252" y="{y}" text-anchor="end">{share * 100:.0f}%</text>'
-        )
-    tiles.append(tile(0, ra, half, ha, t, 0, f"""
-      <text class="big" x="22" y="{ra + 84}">{hour_label(m['peak_hour'])}</text>
-      <text class="body" x="22" y="{ra + 106}">is when I commit most (IST)</text>
-      {''.join(parts)}
-      <circle cx="{ccx}" cy="{ccy}" r="{inner - 9}" fill="{t['faint']}"/>
-      <g class="pop">{''.join(spokes)}</g>{ticks}""", "When I commit"))
-
-    # Weekday bars
-    wx = half + GAP
-    wk = m["weekday_contrib"]
-    wpeak = max(wk) or 1
-    bw, slot, base = 18, (col - 44) / 7, ra + ha - 38
-    bars = []
-    for i, c in enumerate(wk):
-        bx = wx + 22 + i * slot + (slot - bw) / 2
-        bh = max(3, 70 * c / wpeak)
-        hot = i == m["peak_weekday"]
-        bars.append(
-            f'<rect x="{bx:.1f}" y="{base - bh:.1f}" width="{bw}" height="{bh:.1f}" rx="4" fill="{t["accent"] if hot else t["accent_soft"]}">'
-            f'<title>{WEEKDAYS_FULL[i]}: {c}</title></rect>'
-            f'<text class="tick" x="{bx + bw / 2:.1f}" y="{base + 18}" text-anchor="middle"{" style=\"fill:" + t["text"] + "\"" if hot else ""}>{WEEKDAYS[i][0]}</text>'
-        )
-    tiles.append(tile(wx, ra, col, ha, t, 1, f"""
-      <text class="big" x="{wx + 22}" y="{ra + 84}">{WEEKDAYS[m['peak_weekday']]}</text>
-      <text class="body" x="{wx + 22}" y="{ra + 106}">{m['weekend_share'] * 100:.0f}% on weekends</text>
-      <g class="rise" style="transform-origin:0 {base}px">{''.join(bars)}</g>""", "Busiest day"))
-
-    # Lines added and removed
-    lx = wx + col + GAP
-    add, dele = data["additions"], data["deletions"]
-    share = add / max(1, add + dele)
-    bar_w = col - 44
-    tiles.append(tile(lx, ra, col, ha, t, 2, f"""
-      <text class="big" x="{lx + 22}" y="{ra + 84}">+{compact(add)}</text>
-      <text class="body" x="{lx + 22}" y="{ra + 106}">lines added, {compact(dele)} removed</text>
-      <g class="grow" style="transform-origin:{lx + 22}px 0">
-        <rect x="{lx + 22}" y="{ra + 140}" width="{bar_w * share - 2:.1f}" height="12" rx="4" fill="{t['accent']}"/>
-        <rect x="{lx + 22 + bar_w * share + 2:.1f}" y="{ra + 140}" width="{max(bar_w * (1 - share) - 2, 3):.1f}" height="12" rx="4" fill="{t['minus']}"/>
-      </g>
-      <circle cx="{lx + 27}" cy="{ra + 172}" r="4" fill="{t['accent']}"/><text class="small" x="{lx + 37}" y="{ra + 176}">added</text>
-      <circle cx="{lx + 92}" cy="{ra + 172}" r="4" fill="{t['minus']}"/><text class="small" x="{lx + 102}" y="{ra + 176}">removed</text>
-      <text class="small" x="{lx + 22}" y="{ra + 202}">across {num(data['commits_total'])} commits</text>""", "Lines of code"))
-
-    # Punch card: weekday by hour
-    rb = ra + ha + GAP
-    left, top, cw, rh = 74, rb + 118, (W - 74 - 150) / 24, 22
-    punch = data["punchcard"]
-    ppeak = max(max(r) for r in punch) or 1
-    dots = []
-    for w in range(7):
-        y = top + w * rh
-        dots.append(f'<text class="tick" x="22" y="{y + 4}">{WEEKDAYS[w]}</text>')
-        for h in range(24):
-            c = punch[w][h]
-            x = left + h * cw + cw / 2
-            if c:
-                r = 2.2 + 7.3 * math.sqrt(c / ppeak)
-                dots.append(
-                    f'<circle class="pop" style="animation-delay:{300 + h * 25}ms" cx="{x:.1f}" cy="{y}" r="{r:.1f}" '
-                    f'fill="{t["accent"]}" fill-opacity="{.35 + .65 * c / ppeak:.2f}"><title>{WEEKDAYS_FULL[w]} {hour_label(h)}: {c}</title></circle>'
-                )
-            else:
-                dots.append(f'<circle cx="{x:.1f}" cy="{y}" r="1.6" fill="{t["border"]}"/>')
-    for h in range(0, 24, 3):
-        dots.append(f'<text class="tick" x="{left + h * cw + cw / 2:.1f}" y="{top + 7 * rh + 8}" text-anchor="middle">{hour_label(h).replace(" ", "")}</text>')
-    # Totals in the margins: per hour above the grid, per weekday beside it.
-    hpeak = max(hours) or 1
-    hbase = top - 22
-    for h, c in enumerate(hours):
-        bh = max(2, 34 * c / hpeak)
-        hot = h == m["peak_hour"]
-        dots.append(
-            f'<rect x="{left + h * cw + 4:.1f}" y="{hbase - bh:.1f}" width="{cw - 8:.1f}" height="{bh:.1f}" rx="2.5" '
-            f'fill="{t["accent"] if hot else t["accent_soft"]}"><title>{hour_label(h)}: {c} commits</title></rect>'
-        )
-        if hot:
-            dots.append(f'<text class="tick" x="{left + h * cw + cw / 2:.1f}" y="{hbase - bh - 6:.1f}" text-anchor="middle" style="fill:{t["text"]}">{hour_label(h)}</text>')
-    wc = m["weekday_commits"]
-    wpk = max(wc) or 1
-    mx0 = W - 22 - 112
-    for w, c in enumerate(wc):
-        y = top + w * rh
-        dots.append(
-            f'<rect class="grow" style="transform-origin:{mx0}px 0" x="{mx0}" y="{y - 4}" width="{max(2, 72 * c / wpk):.1f}" height="8" rx="2.5" '
-            f'fill="{t["accent"] if c == wpk else t["accent_soft"]}"><title>{WEEKDAYS_FULL[w]}: {c} commits</title></rect>'
-            f'<text class="num" x="{W - 22}" y="{y + 4}" text-anchor="end">{c}</text>'
-        )
-    hb = 118 + 7 * rh + 28
-    tiles.append(tile(0, rb, W, hb, t, 3, f"""
-      <text class="label" x="{W - 22}" y="{rb + 32}" text-anchor="end">{num(data['commits_total'])} COMMITS · {m['night_share'] * 100:.0f}% AFTER 10 PM</text>
-      {''.join(dots)}""", "Commits by day and hour"))
-
     # Top repos this year
-    rc = rb + hb + GAP
+    rc = hw + GAP
     hc = 212
     repos = data["top_repos"][:5]
     rpeak = max(r["commits"] for r in repos) or 1
@@ -487,20 +363,31 @@ def rhythm(data: dict, t: dict) -> str:
         )
     tiles.append(tile(yx, rc, col, hc, t, 5, f'<g class="rise" style="transform-origin:0 {ybase}px">{"".join(ybars)}</g>', "Year by year"))
 
-    # Load average, in contributions a day
-    ox = yx + col + GAP
-    l1, l7, l365 = m["load"]
-    tiles.append(tile(ox, rc, col, hc, t, 6, f"""
-      <text x="{ox + 22}" y="{rc + 90}" style="font-family:{MONO};font-size:22px;font-weight:700;letter-spacing:-.5px" fill="{t['text']}">{l1:.2f} <tspan fill="{t['muted']}">{l7:.2f} {l365:.2f}</tspan></text>
-      <text class="small" x="{ox + 22}" y="{rc + 118}">contributions a day over</text>
-      <text class="small" x="{ox + 22}" y="{rc + 136}">the last week, month, year</text>
-      <text class="small" x="{ox + 22}" y="{rc + 172}"><tspan class="strong" style="fill:{t['minus'] if m['trend'] < 0 else t['accent']}">{"↓" if m['trend'] < 0 else "↑"} {abs(m['trend']) * 100:.0f}%</tspan> last 30 days vs the 30 before</text>
-      <text class="small" x="{ox + 22}" y="{rc + 192}"><tspan class="strong">{m['active_days'] / 365 * 100:.0f}%</tspan> of the last 365 days active</text>""", "Load average"))
+    # Busiest weekday
+    wx = yx + col + GAP
+    ra, ha = rc, hc
+    wk = m["weekday_contrib"]
+    wpeak = max(wk) or 1
+    bw, slot, base = 18, (col - 44) / 7, ra + ha - 38
+    bars = []
+    for i, c in enumerate(wk):
+        bx = wx + 22 + i * slot + (slot - bw) / 2
+        bh = max(3, 54 * c / wpeak)
+        hot = i == m["peak_weekday"]
+        bars.append(
+            f'<rect x="{bx:.1f}" y="{base - bh:.1f}" width="{bw}" height="{bh:.1f}" rx="4" fill="{t["accent"] if hot else t["accent_soft"]}">'
+            f'<title>{WEEKDAYS_FULL[i]}: {c}</title></rect>'
+            f'<text class="tick" x="{bx + bw / 2:.1f}" y="{base + 18}" text-anchor="middle"{" style=\"fill:" + t["text"] + "\"" if hot else ""}>{WEEKDAYS[i][0]}</text>'
+        )
+    tiles.append(tile(wx, ra, col, ha, t, 6, f"""
+      <text class="big" x="{wx + 22}" y="{ra + 84}">{WEEKDAYS[m['peak_weekday']]}</text>
+      <text class="body" x="{wx + 22}" y="{ra + 106}">{m['weekend_share'] * 100:.0f}% on weekends</text>
+      <g class="rise" style="transform-origin:0 {base}px">{''.join(bars)}</g>""", "Busiest day"))
 
     H = rc + hc
     return frame(W, H, t, "".join(tiles),
-                 f"When I work: most commits around {hour_label(m['peak_hour'])}, busiest on {WEEKDAYS_FULL[m['peak_weekday']]}s. "
-                 f"{compact(add)} lines added across {data['commits_total']} commits. Top repo this year: {repos[0]['name']}.")
+                 f"Commits per week by repo, busiest on {WEEKDAYS_FULL[m['peak_weekday']]}s. "
+                 f"Top repo this year: {repos[0]['name']}.")
 
 
 def main() -> None:
