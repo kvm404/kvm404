@@ -8,7 +8,6 @@
 
 - DataScience Student 
 - Building full-stack web apps and android apps.
-- Linux user
 - Loves to build cli tools and customizing linux
 
 ## Tech Stack
