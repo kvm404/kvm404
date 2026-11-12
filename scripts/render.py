@@ -6,7 +6,6 @@ Writes assets/bento-{light,dark}.svg and assets/rhythm-{light,dark}.svg.
 
 from __future__ import annotations
 
-import base64
 import datetime as dt
 import math
 import os
@@ -46,7 +45,7 @@ def tile(x, y, w, h, t, i, body, label=None):
     )
 
 
-def bento(data: dict, t: dict, photo: str) -> str:
+def bento(data: dict, t: dict) -> str:
     col = (W - 3 * GAP) / 4  # quarter width
     half = col * 2 + GAP
     r1, r2 = 0, 200 + GAP
@@ -55,12 +54,9 @@ def bento(data: dict, t: dict, photo: str) -> str:
     # Profile
     px, py = 0, r1
     tiles.append(tile(px, py, half, 200, t, 0, f"""
-      <clipPath id="avatar"><circle cx="{px + 74}" cy="{py + 74}" r="46"/></clipPath>
-      <circle cx="{px + 74}" cy="{py + 74}" r="50" fill="none" stroke="{t['accent']}" stroke-width="2" stroke-dasharray="4 5"/>
-      <image href="{photo}" x="{px + 28}" y="{py + 28}" width="92" height="92" clip-path="url(#avatar)" preserveAspectRatio="xMidYMid slice"/>
-      <text class="h1" x="{px + 144}" y="{py + 66}">Kumar Vaibhav</text>
-      <text class="body" x="{px + 144}" y="{py + 92}">Fullstack developer, studying data science</text>
-      <text class="body" x="{px + 144}" y="{py + 112}">at IIT Madras. Web, Android, Linux, games.</text>
+      <text class="h1" x="{px + 28}" y="{py + 66}">Kumar Vaibhav</text>
+      <text class="body" x="{px + 28}" y="{py + 92}">Fullstack developer, studying data science</text>
+      <text class="body" x="{px + 28}" y="{py + 112}">at IIT Madras. Web, Android, Linux, games.</text>
       <g transform="translate({px + 28} {py + 148})">
         <rect width="122" height="28" rx="14" fill="{t['faint']}"/>
         <text class="chip" x="61" y="18.5" text-anchor="middle">krvaibhav.dev</text>
@@ -373,10 +369,8 @@ def rhythm(data: dict, t: dict) -> str:
 
 def main() -> None:
     data = load(LOGIN)
-    with open(os.path.join(OUT, "avatar.webp"), "rb") as f:
-        photo = "data:image/webp;base64," + base64.b64encode(f.read()).decode()
     for name, theme in THEMES.items():
-        write(os.path.join(OUT, f"bento-{name}.svg"), bento(data, theme, photo))
+        write(os.path.join(OUT, f"bento-{name}.svg"), bento(data, theme))
         write(os.path.join(OUT, f"rhythm-{name}.svg"), rhythm(data, theme))
     print("rendered", data["generated"])
 
